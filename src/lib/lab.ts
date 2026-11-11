@@ -8,6 +8,8 @@ interface Run {
   types: number;
   instantiations: number;
   memoryUsedKB: number | null;
+  /** Peak RSS from /usr/bin/time, MiB. */
+  maxRssMB?: number | null;
   checkTime: number;
   totalTime: number;
 }
@@ -44,7 +46,28 @@ export interface Experiment {
 }
 
 export const labGeneratedAt: string = raw.generatedAt;
-export const experiments = (raw.experiments as unknown as Experiment[]).slice().sort((a, b) => b.id.localeCompare(a.id));
+// Merged protocol sessions carry raw runs only: medians are always recomputed from the runs (true median).
+const trueMedian = (v: number[]) => { const s = [...v].sort((a, b) => a - b); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+function withMedians(e: Experiment): Experiment {
+  for (const s of e.sessions) for (const c of s.conditions) {
+    if (c.status !== 'ok' || !c.runs?.length) { delete c.median; continue; }
+    const keys = Object.keys(c.runs[0]).filter((k) => typeof (c.runs![0] as any)[k] === 'number');
+    c.median = Object.fromEntries(keys.map((k) => [k, trueMedian(c.runs!.map((r) => (r as any)[k]).filter((x: unknown) => typeof x === 'number'))])) as unknown as Run;
+  }
+  return e;
+}
+export const experiments = (raw.experiments as unknown as Experiment[]).map(withMedians).sort((a, b) => b.id.localeCompare(a.id));
+
+/** Why a condition failed, from what the run recorded (never the machine's RAM). */
+export function failLabel(c: Condition & { failure?: { cause?: string }; env?: Record<string, string> }, s: Session & { protocol?: { heapLimitBytes?: number } }) {
+  if (c.status !== 'out-of-memory') return 'Did not finish';
+  if (c.failure?.cause === 'v8-heap-limit') {
+    const custom = c.env?.NODE_OPTIONS?.match(/--max-old-space-size=(\d+)/)?.[1];
+    const lim = custom ? `${Number(custom) / 1024} GiB` : s.protocol?.heapLimitBytes ? `${(s.protocol.heapLimitBytes / 2 ** 30).toFixed(1)} GiB` : null;
+    return `Out of memory at Node.js's ${custom ? '' : 'default '}heap limit${lim ? ` (${lim})` : ''}`;
+  }
+  return 'Out of memory (cause not recorded)';
+}
 
 export const compilers = (e: Experiment) =>
   [...new Set(e.sessions.flatMap((s) => s.conditions.map((c) => c.compiler)))].sort();

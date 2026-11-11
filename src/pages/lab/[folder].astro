@@ -5,7 +5,7 @@ import Tag from '../../components/Tag.astro';
 import StatusPill from '../../components/StatusPill.astro';
 import BarChart from '../../components/BarChart.astro';
 import Versions from '../../components/Versions.astro';
-import { experiments, compilers, chartGroups, headline, machine, range, openedText, type Experiment } from '../../lib/lab';
+import { experiments, compilers, chartGroups, headline, machine, range, openedText, failLabel, type Experiment } from '../../lib/lab';
 import { site } from '../../data/site';
 import { formatDate, seconds, megabytes } from '../../lib/format';
 
@@ -51,19 +51,22 @@ const md = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace
 
   <section class="wrap block" id="results" aria-label="Results by machine">
     {sessions.map((s) => {
-      const max = Math.max(...s.conditions.filter((c) => c.median).map((c) => range(c)?.max ?? c.median!.checkTime));
+      // One scale per workload (sources, checker count, full suite), so fast conditions stay readable next to slow ones.
+      const scaleOf = (scope: string) => Math.max(0.001, ...s.conditions.filter((c) => c.median && c.scope === scope).map((c) => range(c)?.max ?? c.median!.checkTime));
+      const scopes = new Set(s.conditions.map((c) => c.scope));
       return (
         <div class="session" data-reveal>
           <div class="head-row">
-            <div><h2>Results on {s.environment.cpu.replace(/\(R\)/g, '').replace(/\s+/g, ' ')}</h2><p>{formatDate(s.date)}, {s.runsPerCondition} runs per condition{s.safetyCheck && `, safety check ${s.safetyCheck}`}. {machine(s)}, {s.environment.platform}.</p></div>
+            <div><h2>Results on {s.environment.cpu.replace(/\(R\)/g, '').replace(/\s+/g, ' ')}</h2><p>{formatDate(s.date)}, {s.runsPerCondition} runs per condition{(s as any).protocol && ' at most, one discarded warm-up each, conditions interleaved'}{s.safetyCheck && `, safety check ${s.safetyCheck}`}. {machine(s)}, {s.environment.platform}.</p></div>
           </div>
           <div class="kcard">
             <div class="bars" data-observe>
               {s.conditions.map((c) => {
                 const r = range(c);
+                const max = scaleOf(c.scope);
                 return (
                   <div class="bar-row">
-                    <div class="bar-head"><span set:html={vers(c.label)} /><span class="v">{c.median ? `${seconds(c.median.checkTime)} median` : c.status.replace(/-/g, ' ')}</span></div>
+                    <div class="bar-head"><span set:html={vers(c.label)} /><span class="v">{c.median ? `${seconds(c.median.checkTime)} median` : failLabel(c as any, s as any)}</span></div>
                     <div class="bar-track">
                       {c.median && <div class="bar-fill" data-draw="x" data-variant={c.scope === 'after' ? 'after' : undefined} style={`width:${(c.median.checkTime / max) * 100}%`}></div>}
                       {r && <span class="bar-range" aria-hidden="true" style={`left:${(r.min / max) * 100}%;width:${((r.max - r.min) / max) * 100}%`}></span>}
@@ -72,11 +75,11 @@ const md = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace
                 );
               })}
             </div>
-            <p class="meta">Bar: median check time. Bracket: fastest to slowest run.</p>
+            <p class="meta">Bar: median check time. Bracket: fastest to slowest run.{scopes.size > 1 && " Bars share one scale within each workload (sources, checker count, full suite), not across workloads."}</p>
           </div>
           <div class="table-wrap" tabindex="0" role="region" aria-label="Results table, scrolls horizontally">
             <table>
-              <thead><tr><th>Condition</th><th class="num">Check</th><th class="num">Total</th><th class="num">Memory</th><th class="num">Types</th><th class="num">Instantiations</th></tr></thead>
+              <thead><tr><th>Condition</th><th class="num">Check</th><th class="num">Total</th><th class="num">Peak RSS</th><th class="num">Types</th><th class="num">Instantiations</th></tr></thead>
               <tbody>
                 {s.conditions.map((c) => (
                   <tr>
@@ -85,11 +88,11 @@ const md = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace
                       <>
                         <td class="num">{seconds(c.median.checkTime)}</td>
                         <td class="num">{seconds(c.median.totalTime)}</td>
-                        <td class="num">{c.median.memoryUsedKB ? megabytes(c.median.memoryUsedKB) : 'n/a'}</td>
+                        <td class="num">{c.median.maxRssMB ? (c.median.maxRssMB >= 1024 ? `${(c.median.maxRssMB / 1024).toFixed(1)} GiB` : `${Math.round(c.median.maxRssMB)} MiB`) : 'n/a'}</td>
                         <td class="num">{c.median.types.toLocaleString('en-US')}</td>
                         <td class="num">{c.median.instantiations.toLocaleString('en-US')}</td>
                       </>
-                    ) : <td class="num" colspan="5">{c.status.replace(/-/g, ' ')}</td>}
+                    ) : <td class="num" colspan="5">{failLabel(c as any, s as any)}</td>}
                   </tr>
                 ))}
               </tbody>
