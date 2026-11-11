@@ -5,7 +5,7 @@ import Tag from '../../components/Tag.astro';
 import StatusPill from '../../components/StatusPill.astro';
 import BarChart from '../../components/BarChart.astro';
 import Versions from '../../components/Versions.astro';
-import { experiments, compilers, chartGroups, headline, machine, range, type Experiment } from '../../lib/lab';
+import { experiments, compilers, chartGroups, headline, machine, range, openedText, type Experiment } from '../../lib/lab';
 import { site } from '../../data/site';
 import { formatDate, seconds, megabytes } from '../../lib/format';
 
@@ -20,7 +20,7 @@ const vers = (s: string) => s.replace(/(\d+\.\d+\.\d+)/g, '<span class="ver">$1<
 const md = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/`([^`]+)`/g, '<code>$1</code>');
 ---
 <Base title={`Lab #${e.id}: ${e.title}`} description={e.verdict.replace(/`/g, '')} type="article">
-  <PageHero title={e.title} crumb={{ href: '/lab/', label: 'Performance Lab', after: `Experiment #${e.id}` }}>
+  <PageHero title={e.title} crumb={{ href: '/lab/', label: 'Performance Lab', after: `Experiment #${e.id}${e.opened ? `, opened ${openedText(e.opened)}` : ''}` }}>
     <p class="hero-sub" slot="sub" set:html={md(e.question)} />
     <a class="cta cta--soft" href="#results">See the results</a>
     <a class="cta cta--onblue" href="#reproduce">Reproduce it</a>

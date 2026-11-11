@@ -32,6 +32,8 @@ export interface Experiment {
   id: string;
   title: string;
   question: string;
+  /** When the experiment was opened: "YYYY-MM" or "YYYY-MM-DD". Not a measurement date. */
+  opened?: string;
   status: 'confirmed' | 'rejected' | 'open';
   verdict: string;
   takeaway: string;
@@ -96,3 +98,10 @@ export function chartGroups(e: Experiment): { groups: ChartGroup[]; delta: 'perc
   ] })).filter((g) => g.bars.every((b) => b.value));
   return { groups, delta: 'times' };
 }
+
+/** "2026-10" -> "October 2026", "2026-10-02" -> "October 2, 2026". */
+export const openedText = (o: string) => {
+  const [y, m, d] = o.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d || 1, 12));
+  return dt.toLocaleDateString('en-US', d ? { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' } : { month: 'long', year: 'numeric', timeZone: 'UTC' });
+};

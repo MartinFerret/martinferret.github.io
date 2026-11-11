@@ -4,7 +4,7 @@ import PageHero from '../../components/PageHero.astro';
 import LabRow from '../../components/LabRow.astro';
 import Tag from '../../components/Tag.astro';
 import StatusPill from '../../components/StatusPill.astro';
-import { experiments, headline, lastSession, machine, labGeneratedAt } from '../../lib/lab';
+import { experiments, headline, lastSession, machine, labGeneratedAt, openedText } from '../../lib/lab';
 import { site } from '../../data/site';
 import { formatDate } from '../../lib/format';
 const sorted = experiments.slice().sort((a, b) => a.id.localeCompare(b.id));
@@ -52,7 +52,7 @@ const method = [
     {sorted.map((e, i) => (
       <div class="exp">
         <LabRow e={e} reverse={i % 2 === 1} heading="h2" />
-        <p class="exp-machine">Latest run: {machine(lastSession(e))}, {formatDate(lastSession(e).date)}. {e.sessions.length} {e.sessions.length === 1 ? 'machine' : 'machines'} in total.</p>
+        <p class="exp-machine">{e.opened && `Opened ${openedText(e.opened)}. `}Latest run: {machine(lastSession(e))}, {formatDate(lastSession(e).date)}. {e.sessions.length} {e.sessions.length === 1 ? 'machine' : 'machines'} in total.</p>
       </div>
     ))}
   </section>
