@@ -32,7 +32,7 @@ const kinds = (['pr', 'issue', 'answer'] as Kind[]).filter((k) => list.some((c) 
 const statuses = (['merged', 'open', 'discussion', 'answered', 'closed'] as Status[]).filter((s) => list.some((c) => c.status === s));
 const plural: Record<Kind, string> = { pr: 'Pull requests', issue: 'Issue analyses', answer: 'Answers' };
 ---
-<Base title="Work" description="Martin Ferret's open source work: pull requests to Microsoft's TypeScript repositories, issue analyses and answers, each with its source and live GitHub status.">
+<Base fullTitle="Open Source TypeScript Contributions | Martin Ferret" title="Work" description="Pull requests to Microsoft's TypeScript repositories, issue analyses and answers by Martin Ferret, each with its source and live GitHub status." crumbs={[["Work", '/work/']]}>
   <PageHero title="Open source work">
     <p class="hero-sub summary" slot="sub">
       <strong><span data-metric="ms-prs">{msPrs.value}</span> pull requests at Microsoft, <span data-metric="ms-merged">{msMerged.value}</span> merged</strong>, <span data-metric="in-review">{inReview.value}</span> in review.{' '}

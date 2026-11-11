@@ -16,8 +16,13 @@ const H = heading;
     <span class="zig-tags"><Tag kind="lab">Lab #{e.id}</Tag><StatusPill status={e.status === 'open' ? 'open-question' : e.status} /></span>
     <H>{e.title.split(':')[0]}</H>
     {h && <p class="zig-result"><span class="big">{h.value}</span><span>{h.label}</span></p>}
+    {e.remeasuring && <p class="remeasure"><span class="badge badge--review">Being re-measured</span> The verdict below stays as published until the new results are in.</p>}
     <p class="zig-verdict">{e.verdict.replace(/`/g, '')}</p>
     <a class="cta cta--outline" href={`/lab/${e.folder}/`}>Read the experiment <Fragment set:html={arrow} /></a>
   </div>
   {groups.length > 0 && <div class="zig-chart"><BarChart groups={groups} delta={delta} label={`Lab #${e.id}, median check time`} /></div>}
 </article>
+
+<style>
+  .remeasure { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; font-size: var(--step--1); color: var(--ink-2); }
+</style>

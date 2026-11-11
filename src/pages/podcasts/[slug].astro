@@ -1,0 +1,81 @@
+---
+// A podcast Martin hosts or co-hosts. Built only from src/data/podcasts.ts (read from the show's public page).
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Tag from '../../components/Tag.astro';
+import { podcasts, type HostedPodcast } from '../../data/podcasts';
+import { site } from '../../data/site';
+import { abs, personRef } from '../../lib/schema';
+import { formatDate } from '../../lib/format';
+import { arrow } from '../../lib/ui';
+
+export function getStaticPaths() {
+  return podcasts.map((p) => ({ params: { slug: p.slug }, props: { p } }));
+}
+const { p } = Astro.props as { p: HostedPodcast };
+const series = {
+  '@type': 'PodcastSeries',
+  '@id': abs(`/podcasts/${p.slug}/#series`),
+  name: p.name,
+  description: p.summary,
+  url: p.url,
+  sameAs: [p.url],
+  inLanguage: p.inLanguage,
+  author: [personRef(), { '@type': 'Person', name: p.cohost.name, url: p.cohost.url }],
+};
+const episodes = p.episodes.map((e) => ({
+  '@type': 'PodcastEpisode',
+  name: e.title,
+  url: e.url,
+  inLanguage: p.inLanguage,
+  partOfSeries: { '@id': abs(`/podcasts/${p.slug}/#series`) },
+  ...(e.date ? { datePublished: e.date } : {}),
+}));
+const description = `${p.summary} Episodes and Spotify link.`.length < 155 ? `${p.summary} Episodes and Spotify link.` : p.summary;
+---
+<Base fullTitle={`${p.name}, a podcast by Martin Ferret and ${p.cohost.name}`.slice(0, 60)} title={p.name} description={description} schema={[series, ...episodes]} crumbs={[["Speaking", '/speaking/'], [p.name, `/podcasts/${p.slug}/`]]}>
+  <PageHero title={p.name} crumb={{ href: '/speaking/', label: 'Speaking', after: 'Podcast' }}>
+    <p class="hero-sub" slot="sub">A French-language podcast about entrepreneurship for developers, co-hosted by {site.name} and <a href={p.cohost.url} rel="noopener" target="_blank" class="on-blue">{p.cohost.name}</a>.</p>
+    <a class="cta cta--soft" href={p.url} target="_blank" rel="noopener">Listen on Spotify <Fragment set:html={arrow} /></a>
+    <a class="cta cta--onblue" href="/speaking/">All talks and podcasts</a>
+  </PageHero>
+
+  <section class="wrap block" aria-labelledby="show-title" data-reveal>
+    <div class="pod-grid">
+      <div class="kcard">
+        <span class="kcard-tags"><Tag kind="podcast">Podcast, in {p.language}</Tag><span class="badge badge--closed">{p.status === 'past' ? 'Past' : 'Active'}</span></span>
+        <h2 id="show-title">About the show</h2>
+        <p class="read">{site.name} is {p.role.replace(/^Co-host/, 'co-host').replace(`, with ${p.cohost.name}`, '')} of {p.name}, with <a class="link" href={p.cohost.url} rel="noopener" target="_blank">{p.cohost.name}</a>. The show's own description, in French:</p>
+        <blockquote lang="fr" class="quote">{p.description}</blockquote>
+      </div>
+      <div class="kcard">
+        <h2>Episodes</h2>
+        <ol class="eps" role="list">
+          {p.episodes.map((e) => (
+            <li><a class="ep" href={e.url} target="_blank" rel="noopener" lang="fr"><span class="ep-title">{e.title}</span>{e.date && <span class="meta">{formatDate(e.date)}</span>}</a></li>
+          ))}
+        </ol>
+        <p class="meta">The full list, newest first, is on <a class="link" href={p.url} target="_blank" rel="noopener">Spotify</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="more-title" data-reveal>
+    <div class="kcard">
+      <h2 id="more-title">More from Martin</h2>
+      <p class="read">Martin also speaks about TypeScript performance in English and French: see his <a class="link" href="/speaking/">talks and podcast appearances</a>, <a class="link" href="/speak/">invite him to speak</a>, or <a class="link" href="/hire/">work with him</a> on a TypeScript performance project.</p>
+    </div>
+  </section>
+</Base>
+<style>
+  .pod-grid { display: grid; gap: var(--grid-gap); align-items: start; }
+  .pod-grid h2 { font-size: var(--fs-h2); }
+  .quote { margin: 0; padding: 14px 18px; border-left: 3px solid var(--c-coral); background: var(--c-coral-soft); border-radius: 0 12px 12px 0; color: var(--ink-2); }
+  .eps { list-style: none; display: grid; gap: 0; }
+  .eps li + li { border-top: 1px solid var(--rule); }
+  .ep { display: grid; gap: 2px; padding: 12px 0; }
+  .ep-title { font-weight: 600; color: var(--ink); }
+  .ep:hover .ep-title { color: var(--accent); }
+  .on-blue { color: #fff; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.5); text-underline-offset: 0.2em; }
+  @media (min-width: 960px) { .pod-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>

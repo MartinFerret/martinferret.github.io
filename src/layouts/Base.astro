@@ -9,18 +9,32 @@ import Search from '../components/Search.astro';
 import Footer from '../components/Footer.astro';
 import { site } from '../data/site';
 import { ogPathFor } from '../lib/og';
+import { graph, breadcrumbs } from '../lib/schema';
 
-interface Props { title?: string; description?: string; type?: 'website' | 'article'; }
-const { title, description = site.bio, type = 'website' } = Astro.props;
-const fullTitle = title ? `${title}, ${site.name}` : `${site.name}: faster TypeScript for the age of AI`;
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL(await ogPathFor(Astro.url.pathname), Astro.site);
-const person = {
-  '@context': 'https://schema.org', '@type': 'Person', name: site.name, url: Astro.site?.toString(),
-  jobTitle: 'TypeScript expert', description: site.bio,
-  address: { '@type': 'PostalAddress', addressCountry: site.country }, workLocation: { '@type': 'Place', name: site.location },
-  sameAs: Object.values(site.links), knowsAbout: ['TypeScript', 'Type-checking performance', 'DOM type definitions'],
-};
+interface Props {
+  title?: string;
+  /** Exact <title>, for pages written for one search (under 60 characters). Defaults to "<title> | Martin Ferret". */
+  fullTitle?: string;
+  description?: string;
+  type?: 'website' | 'article';
+  /** Structured data blocks for this page (Person, Article, Event...). Breadcrumbs are added automatically. */
+  schema?: object[];
+  /** Breadcrumb trail below Home, as [name, path]. Defaults to [[title, current path]]. Not used on the home page. */
+  crumbs?: [string, string][];
+  noindex?: boolean;
+}
+const { title, fullTitle: fixedTitle, description = site.bio, type = 'website', schema = [], crumbs, noindex = false } = Astro.props;
+const fullTitle = fixedTitle ?? (title ? `${title} | ${site.name}` : `${site.name}: faster TypeScript for the age of AI`);
+// One canonical per page: the site URL plus the path with a trailing slash, never the query string.
+const path = Astro.url.pathname.replace(/index\.html$/, '').replace(/\/?$/, '/');
+const canonical = new URL(path, Astro.site);
+const isHome = path === '/';
+const ogImage = new URL(await ogPathFor(path), Astro.site);
+const blocks = [...schema, ...(isHome || noindex ? [] : [breadcrumbs(crumbs ?? [[title ?? fullTitle, path]])])];
+const ld = blocks.length ? graph(blocks) : null;
+// Google Search Console: set GOOGLE_SITE_VERIFICATION at build time to add the verification tag. Empty by default.
+const gsc = process.env.GOOGLE_SITE_VERIFICATION ?? '';
+const handle = site.links.x.replace(/^https:\/\/x\.com\//, '@');
 ---
 <!doctype html>
 <html lang="en">
@@ -29,24 +43,28 @@ const person = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    {gsc && <meta name="google-site-verification" content={gsc} />}
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={type} />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={title ?? `${site.name}, TypeScript expert`} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content={handle} />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <meta name="theme-color" content="#f7f9fb" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="alternate" type="application/rss+xml" title={`${site.name}: writing`} href="/rss.xml" />
-    <script type="application/ld+json" set:html={JSON.stringify(person)} />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+    {ld && <script type="application/ld+json" set:html={JSON.stringify(ld)} />}
     <script is:inline>
       (function () {
         var d = document.documentElement;

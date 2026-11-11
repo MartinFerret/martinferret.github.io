@@ -3,13 +3,20 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Method from '../components/Method.astro';
 import Tag from '../components/Tag.astro';
-import { site, contactHref } from '../data/site';
+import { site, socialLinks, contactHref } from '../data/site';
+import { podcasts } from '../data/podcasts';
+import { certificatesArticles } from '../lib/certificates';
+import { person } from '../lib/schema';
 import { arrow } from '../lib/ui';
+
+const first = "Martin Ferret is a French TypeScript expert focused on type-checking performance, a contributor to Microsoft's TypeScript DOM types, and Lead Content Owner for the JavaScript and TypeScript certifications at Certificates.dev.";
+const pod = podcasts[0];
+const profiles = [...socialLinks, ...podcasts.map((p) => ({ label: `${p.name} on Spotify`, href: p.url }))];
 ---
-<Base title="About" description={site.bio}>
-  <PageHero title="About Martin" lede="TypeScript expert, focused on how fast the type checker runs and how much you can trust what it says." bareFig>
-    <a class="cta cta--soft" href={contactHref}>Invite me to speak <Fragment set:html={arrow} /></a>
-    <a class="cta cta--onblue" href={site.links.github} target="_blank" rel="noopener">GitHub profile</a>
+<Base fullTitle="About Martin Ferret, TypeScript Expert" title="About" description="Martin Ferret is a French TypeScript expert focused on type-checking performance, contributor to TypeScript's DOM types, at Certificates.dev." schema={[person()]} crumbs={[["About", '/about/']]}>
+  <PageHero title="About Martin Ferret" lede={first} bareFig>
+    <a class="cta cta--soft" href="/hire/">Work with me <Fragment set:html={arrow} /></a>
+    <a class="cta cta--onblue" href={contactHref}>Invite me to speak</a>
     <figure class="hero-photo" slot="fig">
       <img src="/martin-ferret.webp" alt="Portrait of Martin Ferret" width="512" height="512" />
       <figcaption><b>{site.name}</b> France, working remotely across Europe</figcaption>
@@ -19,15 +26,25 @@ import { arrow } from '../lib/ui';
   <section class="wrap block" aria-label="Biography" data-reveal>
     <div class="bio">
       <div class="read stack bio-text">
-        <p>I work on how fast TypeScript checks types. I build small experiments that isolate one cause of slowness, measure it on TypeScript 6 and 7, and publish the result with the raw numbers, including when the hypothesis turns out to be wrong.</p>
-        <p>When the cause sits in TypeScript’s own type definitions, I try to fix it there. My first pull request to the DOM type definitions was merged in November 2026. I also spend time on open issues: reproducing reports, checking edge cases and proposing an approach before anyone writes code.</p>
-        <p>I’m Lead Content Owner for the JavaScript and TypeScript certifications at Certificates.dev, and I run {site.meetup.name}, a free online meetup in French.</p>
+        <p>He works on how fast TypeScript checks types. He builds small experiments that isolate one cause of slowness, measures it on TypeScript 6 and 7, and publishes the result with the raw numbers in the <a href="/lab/">TypeScript Performance Lab</a>, including when the hypothesis turns out to be wrong.</p>
+        <p>When the cause sits in TypeScript’s own type definitions, he fixes it there: his pull requests to the DOM type definitions are merged into Microsoft’s TypeScript-DOM-lib-generator, listed on <a href="/work/">Work</a>. He has spent seven years building large-scale enterprise applications with TypeScript and Angular.</p>
+        <p>He is the author of {certificatesArticles.length} articles on the Certificates.dev blog, listed on <a href="/writing/#certificates">Writing</a>. {pod && <>He co-hosted <a href={`/podcasts/${pod.slug}/`}>{pod.name}</a>, a French-language podcast about entrepreneurship for developers, with <a href={pod.cohost.url} rel="noopener" target="_blank">{pod.cohost.name}</a>.</>} He runs <a href="/meetup/">{site.meetup.name}</a>, a free online meetup in French.</p>
       </div>
       <ul class="facts" role="list">
         <li><a class="kcard" href="/work/"><Tag kind="pr">Open source</Tag><span class="kcard-text">Contributor to TypeScript’s DOM types</span></a></li>
         <li><a class="kcard" href="/lab/"><Tag kind="lab">Research</Tag><span class="kcard-text">TypeScript Performance Lab</span></a></li>
-        <li><a class="kcard" href="/speaking/#community"><Tag kind="community">Community</Tag><span class="kcard-text">{site.meetup.name}</span></a></li>
-        <li><div class="kcard"><Tag kind="article">Certifications</Tag><span class="kcard-text">Lead Content Owner, JavaScript and TypeScript, Certificates.dev</span></div></li>
+        <li><a class="kcard" href="/meetup/"><Tag kind="community">Community</Tag><span class="kcard-text">{site.meetup.name}</span></a></li>
+        <li><a class="kcard" href="/writing/#certificates"><Tag kind="article">Certifications</Tag><span class="kcard-text">Lead Content Owner, JavaScript and TypeScript, Certificates.dev. Author of {certificatesArticles.length} articles on its blog</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="profiles-title" data-reveal>
+    <div class="kcard">
+      <h2 id="profiles-title">Profiles</h2>
+      <ul class="profiles" role="list">
+        {profiles.map((l) => <li><a class="link" href={l.href} rel="me noopener" target="_blank">{l.label}</a></li>)}
+        <li><a class="link" href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></li>
       </ul>
     </div>
   </section>
@@ -61,5 +78,8 @@ import { arrow } from '../lib/ui';
   .record:hover { transform: translateY(-3px); }
   .record-text { display: grid; gap: 10px; justify-items: start; max-width: 52ch; }
   .contact-line { margin-top: var(--s3); color: var(--ink-2); }
+  .profiles { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+  .bio-text a { color: var(--ink); text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 0.2em; }
+  .bio-text a:hover { color: var(--accent); }
   .record-title { font-family: var(--font-display); font-size: var(--step-3); line-height: 1.15; color: var(--ink); }
 </style>

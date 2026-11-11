@@ -8,6 +8,7 @@ import Versions from '../../components/Versions.astro';
 import { experiments, compilers, chartGroups, headline, machine, range, openedText, failLabel, type Experiment } from '../../lib/lab';
 import { site } from '../../data/site';
 import { formatDate, seconds, megabytes } from '../../lib/format';
+import { abs, personRef } from '../../lib/schema';
 
 export function getStaticPaths() {
   return experiments.map((e) => ({ params: { folder: e.folder }, props: { e } }));
@@ -17,9 +18,25 @@ const h = headline(e);
 const { groups, delta } = chartGroups(e);
 const sessions = e.sessions.slice().sort((a, b) => b.date.localeCompare(a.date));
 const vers = (s: string) => s.replace(/(\d+\.\d+\.\d+)/g, '<span class="ver">$1</span>');
+const clip = (t: string, n: number) => (t.length <= n ? t : t.slice(0, n).replace(/\s\S*$/, '') + '...');
+const desc = clip(`Lab #${e.id}. ${e.question.replace(/`/g, '')}`, 152);
+const article = {
+  '@type': 'Article',
+  headline: `Lab #${e.id}: ${e.title}`,
+  description: desc,
+  author: personRef(),
+  publisher: personRef(),
+  url: abs(`/lab/${e.folder}/`),
+  mainEntityOfPage: abs(`/lab/${e.folder}/`),
+  image: abs(`/og/lab--${e.folder}.png`),
+  datePublished: e.sessions.map((s) => s.date).sort()[0].slice(0, 10),
+  dateModified: e.sessions.map((s) => s.date).sort().pop()!.slice(0, 10),
+  inLanguage: 'en',
+  about: ['TypeScript', 'TypeScript performance'],
+};
 const md = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/`([^`]+)`/g, '<code>$1</code>');
 ---
-<Base title={`Lab #${e.id}: ${e.title}`} description={e.verdict.replace(/`/g, '')} type="article">
+<Base fullTitle={`Lab #${e.id}: ${e.title.split(':')[0]} | Martin Ferret`} title={`Lab #${e.id}: ${e.title}`} description={desc} type="article" schema={[article]} crumbs={[["Lab", '/lab/'], [`#${e.id} ${e.title.split(':')[0]}`, `/lab/${e.folder}/`]]}>
   <PageHero title={e.title} crumb={{ href: '/lab/', label: 'Performance Lab', after: `Experiment #${e.id}${e.opened ? `, opened ${openedText(e.opened)}` : ''}` }}>
     <p class="hero-sub" slot="sub" set:html={md(e.question)} />
     <a class="cta cta--soft" href="#results">See the results</a>
@@ -40,6 +57,7 @@ const md = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace
     <div class="verdict">
       <div class="kcard v-main">
         <h2 id="verdict">Verdict</h2>
+        {e.remeasuring && <p class="remeasure"><span class="badge badge--review">Being re-measured</span> This experiment is being re-measured. The verdict and numbers below stay as published until the new results are in.</p>}
         <p class="read" set:html={md(e.verdict)} />
         <h3>Takeaway</h3>
         <p class="read" set:html={md(e.takeaway)} />
@@ -107,7 +125,8 @@ const md = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace
     <div class="wrap">
       <div class="head-row">
         <div><h2 id="repro-title">Reproduce it</h2><p>Node.js 22 or later and git.{e.target && <> Target: {e.target.name} at commit <a class="link" href={`${e.target.repository}/tree/${e.target.commit}`}><span class="ver">{e.target.commit.slice(0, 7)}</span></a>.</>}</p></div>
-        {site.labRepo && <a class="cta cta--primary" href={`${site.labRepo}/tree/main/experiments/${e.folder}`}>Source and raw results</a>}
+        <a class="cta cta--primary" href={`/typescript-performance-lab/experiments/${e.folder}/`}>Lab notebook page</a>
+        {site.labRepo && <a class="cta cta--outline" href={`${site.labRepo}/tree/main/experiments/${e.folder}`}>Source and raw results</a>}
       </div>
       <pre class="code"><code>{e.reproduce}</code></pre>
     </div>
@@ -120,6 +139,7 @@ const md = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace
   .res-label { font-size: var(--step-1); color: var(--ink); }
   .res-meta { font-size: var(--step--1); color: var(--muted); padding-top: 10px; border-top: 1px solid var(--rule); }
   .verdict { display: grid; gap: var(--grid-gap); }
+  .remeasure { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; font-size: var(--step--1); color: var(--ink-2); }
   .v-main h2 { font-size: var(--fs-h2); }
   .v-main h3, .v-chart h3 { font-size: var(--step-1); margin-top: 8px; }
   .v-note { font-size: var(--step--1); color: var(--ink-2); padding: 12px 14px; border-radius: 12px; background: var(--c-sun-soft); }

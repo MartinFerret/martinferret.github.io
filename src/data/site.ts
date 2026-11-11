@@ -9,6 +9,7 @@ export const site = {
   links: {
     github: 'https://github.com/MartinFerret',
     linkedin: 'https://linkedin.com/in/martin-ferret',
+    x: 'https://x.com/FerretMartin1',
     medium: 'https://medium.com/@ferretmartin91',
     sessionize: 'https://sessionize.com/martin-ferret',
     // The repository keeps its original slug; only the meetup's display name changed.
@@ -17,8 +18,8 @@ export const site = {
   meetup: {
     name: "What's up TypeScript France",
     callForTalks: 'https://tally.so/r/o9D2pN',
-    // TODO(Martin): attendee registration link (YouTube or event page). Shown on Speaking when set.
-    registration: null as string | null,
+    // Attendee registration (Luma). Primary button wherever the meetup is shown.
+    registration: 'https://luma.com/1lxnf7nd' as string | null,
     callForTalksCloses: '2026-12-15',
     codeOfConduct: 'https://github.com/MartinFerret/rendez-vous-typescript/blob/main/CODE_OF_CONDUCT.md',
   },
@@ -33,21 +34,24 @@ export const site = {
 export const socialLinks = [
   { label: 'GitHub', href: site.links.github },
   { label: 'LinkedIn', href: site.links.linkedin },
+  { label: 'X', href: site.links.x },
   { label: 'Medium', href: site.links.medium },
   { label: 'Sessionize', href: site.links.sessionize },
   { label: site.meetup.name, href: site.links.meetup },
 ];
 
 export const mailto = `mailto:${site.contactEmail}?subject=${encodeURIComponent('Speaking invitation')}`;
+/** "Book an intro call" on /hire. */
+export const hireMailto = `mailto:${site.contactEmail}?subject=${encodeURIComponent('TypeScript performance project')}`;
 
-// Main navigation. Timeline lives in About and the footer; the meetup in Home and Speaking.
+// Main navigation, at most six items. Timeline, Invite me and the meetup live in the footer and in page content.
 export const nav = [
   { href: '/work/', label: 'Work' },
   { href: '/lab/', label: 'Lab' },
   { href: '/speaking/', label: 'Speaking' },
-  { href: '/speak/', label: 'Invite me' },
   { href: '/writing/', label: 'Writing' },
   { href: '/about/', label: 'About' },
+  { href: '/hire/', label: 'Work with me' },
 ] as const;
 
 // "Invite me to speak" buttons lead to the page for organizers, which has the email.

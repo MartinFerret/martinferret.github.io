@@ -21,10 +21,10 @@ const part = (o: Intl.DateTimeFormatOptions) => (d ? new Intl.DateTimeFormat('en
       <p class="event-when">{meetup.time}. {meetup.format}, in {meetup.language}, free.</p>
       <p class="event-text">{meetup.abstract}</p>
       <div class="cluster event-ctas">
-        <a class="cta cta--primary" href={site.meetup.callForTalks} target="_blank" rel="noopener">Propose a talk <Fragment set:html={arrow} /></a>
-        <a class="cta cta--outline" href={site.meetup.codeOfConduct} target="_blank" rel="noopener">Code of conduct</a>
+        {site.meetup.registration && <a class="cta cta--primary" href={site.meetup.registration} target="_blank" rel="noopener">Register <Fragment set:html={arrow} /></a>}
+        <a class:list={['cta', site.meetup.registration ? 'cta--outline' : 'cta--primary']} href={site.meetup.callForTalks} target="_blank" rel="noopener">Propose a talk</a>
       </div>
-      <p class="event-note">Call for talks open until {formatDate(site.meetup.callForTalksCloses)}. <a class="link" href={site.links.meetup} target="_blank" rel="noopener">Meetup page on GitHub</a></p>
+      <p class="event-note">Call for talks open until {formatDate(site.meetup.callForTalksCloses)}. <a class="link" href="/meetup/">About the meetup</a>. <a class="link" href={site.meetup.codeOfConduct} target="_blank" rel="noopener">Code of conduct</a>.</p>
     </div>
     <div class="event-art"><MeetupArt side="right" /></div>
   </div>

@@ -1,0 +1,98 @@
+---
+// For engineering teams looking for a TypeScript performance expert. Every number below is computed at build.
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Tag from '../components/Tag.astro';
+import { site, hireMailto } from '../data/site';
+import { getRecord, metricsFrom, metric } from '../lib/record';
+import { experiments } from '../lib/lab';
+import { talkPages } from '../lib/talks';
+import { podcasts } from '../data/podcasts';
+import { certificatesArticles } from '../lib/certificates';
+import { abs, person, personRef } from '../lib/schema';
+import { arrow } from '../lib/ui';
+
+const { rows } = await getRecord();
+const metrics = metricsFrom(rows);
+const merged = metric(metrics, 'ms-merged');
+// Only appearances that already happened (an upcoming episode is not proof yet).
+const appearances = talkPages().filter((t) => t.appearance && t.appearance.status === 'delivered');
+const articleCount = certificatesArticles.length;
+
+const intro = 'I help engineering teams make TypeScript fast again: slow type-checking, CI jobs that run out of memory, and the move to TypeScript 7. I measure what your types really cost, fix it without weakening type safety, and leave your team the tools to keep it fast.';
+const services = [
+  { id: 'audit', title: 'TypeScript performance audit', tag: 'lab', text: 'I measure type-checking time and memory on your real codebase, find the types and files that cost the most, and deliver a prioritized list of fixes.' },
+  { id: 'ts7', title: 'TypeScript 7 migration', tag: 'pr', text: 'I measure TypeScript 6 against TypeScript 7 on your project, check memory in your CI, and plan a safe migration.' },
+  { id: 'budget', title: 'Type-checking budget in CI', tag: 'milestone', text: "Budgets in your pipeline that catch a pull request before it slows the build down, based on the compiler's own counters, with a tolerance calibrated on your project." },
+  { id: 'training', title: 'Team training and workshops', tag: 'workshop', text: 'Advanced TypeScript and type performance, for Angular, React and Node.js teams.' },
+] as const;
+
+const service = {
+  '@type': 'ProfessionalService',
+  '@id': abs('/hire/#service'),
+  name: `${site.name}, TypeScript performance consulting`,
+  description: intro,
+  url: abs('/hire/'),
+  image: abs(site.photo.src),
+  email: `mailto:${site.contactEmail}`,
+  // schema.org has no `provider` on ProfessionalService: the Person is its founder, and the provider of each Service.
+  founder: personRef(),
+  knowsAbout: ['TypeScript', 'TypeScript performance', 'TypeScript 7', 'Angular', 'Node.js'],
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'TypeScript performance services',
+    itemListElement: services.map((s) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: s.title, description: s.text, provider: personRef() } })),
+  },
+};
+---
+<Base fullTitle="TypeScript Performance Consultant | Martin Ferret" title="Work with me" description="Slow type-checking, CI out of memory, TypeScript 7 migration: Martin Ferret audits and fixes TypeScript performance for engineering teams." schema={[person(), service]} crumbs={[["Work with me", '/hire/']]}>
+  <PageHero title="TypeScript performance expert for engineering teams" lede={intro}>
+    <a class="cta cta--soft" href={hireMailto}>Book an intro call <Fragment set:html={arrow} /></a>
+    <a class="cta cta--onblue" href="/lab/">See the Lab</a>
+  </PageHero>
+
+  <section class="wrap block" aria-labelledby="services-title" data-reveal>
+    <div class="head-row"><div><h2 id="services-title">What your team gets</h2><p>Four ways to work together, each on your real codebase.</p></div></div>
+    <ul class="g2 services" role="list">
+      {services.map((s, i) => (
+        <li style={`--i:${i}`}>
+          <section class="kcard svc" aria-labelledby={`svc-${s.id}`}>
+            <Tag kind={s.tag}>Service {i + 1}</Tag>
+            <h3 class="kcard-title" id={`svc-${s.id}`}>{s.title}</h3>
+            <p class="kcard-text">{s.text}</p>
+          </section>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="frame sky-frame" aria-labelledby="proof-title" data-reveal>
+    <div class="wrap">
+      <div class="head-center"><Tag kind="milestone">Proof</Tag><h2 id="proof-title">Measured work, in public</h2><p>Every item links to its source.</p></div>
+      <ul class="g3 proof" role="list">
+        <li style="--i:0"><a class="kcard" href="/work/?status=merged"><span class="num">{merged.value}</span><span class="kcard-text">{merged.label}</span></a></li>
+        <li style="--i:1"><a class="kcard" href="/lab/"><span class="num">{experiments.length}</span><span class="kcard-text">published experiments in the TypeScript Performance Lab, with raw results and the machine they ran on</span></a></li>
+        <li style="--i:2"><a class="kcard" href="/writing/#certificates"><span class="num">{articleCount}</span><span class="kcard-text">Author of {articleCount} articles on the Certificates.dev blog</span></a></li>
+        <li style="--i:3"><div class="kcard"><span class="lbl">Certificates.dev</span><span class="kcard-text">Lead Content Owner for the JavaScript and TypeScript certifications</span></div></li>
+        <li style="--i:4"><a class="kcard" href="/about/"><span class="lbl">Experience</span><span class="kcard-text">Seven years building large-scale enterprise applications with TypeScript and Angular</span></a></li>
+        <li style="--i:5"><a class="kcard" href="/speaking/"><span class="num">{appearances.length + podcasts.length}</span><span class="kcard-text">{appearances.length + podcasts.length === 1 ? 'talk or podcast' : 'talks, workshops and podcasts given'}, including {podcasts.map((p) => p.name).join(', ')}, a podcast he co-hosted</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="how-title" data-reveal>
+    <div class="kcard how">
+      <h2 id="how-title">How a project starts</h2>
+      <p class="read">We start with a short call about your codebase and what slows it down. The method is the same one behind the public experiments: measure, isolate one cause, fix it without weakening types, and publish the numbers to your team. See the merged fixes on <a class="link" href="/work/">Work</a>, the experiments in the <a class="link" href="/lab/">Lab</a>, and the talks I give on <a class="link" href="/speak/">Invite me to speak</a>.</p>
+      <div class="cluster"><a class="cta cta--primary" href={hireMailto}>Book an intro call <Fragment set:html={arrow} /></a><span class="meta">Or write to <a class="link" href={hireMailto}>{site.contactEmail}</a></span></div>
+    </div>
+  </section>
+</Base>
+<style>
+  .svc { height: 100%; }
+  .proof .kcard { height: 100%; gap: 8px; }
+  .proof .num { font-family: var(--font-display); font-size: var(--step-5); line-height: 1; letter-spacing: -0.04em; color: var(--c-blue); }
+  .proof .lbl { font-weight: 600; color: var(--ink-2); font-size: var(--step--1); }
+  .how { gap: var(--s3); }
+  .how h2 { font-size: var(--fs-h2); }
+</style>

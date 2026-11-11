@@ -196,7 +196,7 @@ const esc = (v: unknown) => {
 
 export async function getCsv() {
   const { rows } = await getRecord();
-  const abs = (u: string | null) => (u && u.startsWith('/') ? new URL(u, 'https://martinferret.github.io').toString() : u);
+  const abs = (u: string | null) => (u && u.startsWith('/') ? new URL(u, import.meta.env.SITE).toString() : u);
   const cols = ['date', 'mvpCategory', 'kindLabel', 'title', 'status', 'url', 'description'] as const;
   return [cols.join(','), ...rows.map((r) => cols.map((k) => esc(k === 'url' ? abs(r.url) : r[k])).join(','))].join('\n') + '\n';
 }

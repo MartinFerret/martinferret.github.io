@@ -4,40 +4,74 @@ import PageHero from '../../components/PageHero.astro';
 import Tag from '../../components/Tag.astro';
 import { getPosts } from '../../lib/writing';
 import { getMediumArticles } from '../../lib/medium';
+import { certificatesArticles } from '../../lib/certificates';
 import { readingMinutes } from '../../lib/reading';
 import { formatDate } from '../../lib/format';
 import { site } from '../../data/site';
 const posts = await getPosts();
 const medium = await getMediumArticles();
 // No placeholder copy: with nothing to read, the page redirects home and the nav hides it.
-if (!posts.length && !medium.length) return Astro.redirect('/');
+if (!posts.length && !medium.length && !certificatesArticles.length) return Astro.redirect('/');
 const cards = [
   ...posts.map((p) => ({ href: `/writing/${p.id}/`, external: false, title: p.data.title, summary: p.data.description.replace(/`/g, ''), date: p.data.date.toISOString().slice(0, 10), where: 'On this site', minutes: readingMinutes(p.body ?? ''), draft: p.data.draft })),
   ...medium.map((a) => ({ href: a.url, external: true, title: a.title, summary: a.summary, date: a.date, where: 'On Medium', minutes: a.minutes, draft: false })),
 ];
+const n = certificatesArticles.length;
+const ts = certificatesArticles.filter((a) => a.typescript).length;
+const lede = `${site.name} writes about JavaScript and TypeScript. He is the author of ${n} articles on the Certificates.dev blog, listed here newest first with a link to each original.`;
 ---
-<Base title="Writing" description="Articles by Martin Ferret on TypeScript and type-checking performance.">
-  <PageHero title="Writing" lede="Articles on TypeScript, type-checking performance and the tools around them.">
-    <a class="cta cta--soft" href="/rss.xml">RSS feed</a>
-    <a class="cta cta--onblue" href={site.links.medium} target="_blank" rel="noopener">Medium profile</a>
+<Base fullTitle="Articles on JavaScript and TypeScript | Martin Ferret" title="Writing" description={`Articles by Martin Ferret on JavaScript and TypeScript: ${n} published on the Certificates.dev blog, each linked to the original.`} crumbs={[["Writing", '/writing/']]}>
+  <PageHero title="Writing" lede={lede}>
+    <a class="cta cta--soft" href="#certificates">Read the articles</a>
+    <a class="cta cta--onblue" href="/about/">About Martin</a>
   </PageHero>
 
-  <section class="wrap block" aria-labelledby="articles" data-reveal>
-    <div class="head-row"><div><h2 id="articles">Articles</h2><p>{cards.length} {cards.length === 1 ? 'article' : 'articles'}, newest first on this site.</p></div></div>
-    <ul class="g2" role="list">
-      {cards.map((c, i) => (
-        <li style={`--i:${i}`}>
-          <a class="kcard art" href={c.href} target={c.external ? '_blank' : undefined} rel={c.external ? 'noopener' : undefined}>
-            <span class="kcard-tags"><Tag kind="article">{c.where}</Tag>{c.draft && <span class="badge badge--review">Draft, dev only</span>}</span>
-            <h3 class="kcard-title">{c.title}</h3>
-            {c.summary && <p class="kcard-text art-sum">{c.summary}</p>}
-            <p class="kcard-meta"><time datetime={c.date}>{formatDate(c.date)}</time>{c.minutes && <>, {c.minutes} min read</>}</p>
-          </a>
-        </li>
-      ))}
-    </ul>
-  </section>
+  {cards.length > 0 && (
+    <section class="wrap block" aria-labelledby="articles" data-reveal>
+      <div class="head-row"><div><h2 id="articles">On this site and Medium</h2><p>{cards.length} {cards.length === 1 ? 'article' : 'articles'}, newest first.</p></div></div>
+      <ul class="g2" role="list">
+        {cards.map((c, i) => (
+          <li style={`--i:${i}`}>
+            <a class="kcard art" href={c.href} target={c.external ? '_blank' : undefined} rel={c.external ? 'noopener' : undefined}>
+              <span class="kcard-tags"><Tag kind="article">{c.where}</Tag>{c.draft && <span class="badge badge--review">Not published</span>}</span>
+              <h3 class="kcard-title">{c.title}</h3>
+              {c.summary && <p class="kcard-text art-sum">{c.summary}</p>}
+              <p class="kcard-meta"><time datetime={c.date}>{formatDate(c.date)}</time>{c.minutes && <>, {c.minutes} min read</>}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {n > 0 && (
+    <section class="wrap block" id="certificates" aria-labelledby="cert-title" data-reveal>
+      <div class="head-row">
+        <div><h2 id="cert-title">Published on Certificates.dev</h2><p>{n} articles{ts ? `, the ${ts} on TypeScript first, then` : ','} newest first. Each opens the original on certificates.dev.</p></div>
+      </div>
+      <ul class="cert" role="list">
+        {certificatesArticles.map((a) => (
+          <li>
+            <a class="cert-item" href={a.url} rel="noopener" target="_blank">
+              <span class="cert-title">{a.title}</span>
+              <span class="cert-sum">{a.summary}</span>
+              <span class="cert-meta"><time datetime={a.date}>{formatDate(a.date)}</time>, Certificates.dev</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="meta cert-note">These articles belong to Certificates.dev and are listed here with a link to each one. Related: <a class="link" href="/hire/">work with me</a> on TypeScript performance, or see the <a class="link" href="/lab/">Lab</a>.</p>
+    </section>
+  )}
 </Base>
 <style>
   .art-sum { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .cert { list-style: none; display: grid; gap: 0; background: var(--sheet); border: 1px solid var(--rule); border-radius: 24px; padding: 4px var(--card-pad); }
+  .cert li + li { border-top: 1px solid var(--rule); }
+  .cert-item { display: grid; gap: 4px; padding: 18px 0; }
+  .cert-title { font-family: var(--font-display); font-size: var(--step-1); font-weight: 500; line-height: 1.3; color: var(--ink); transition: color var(--t-fast); }
+  .cert-item:hover .cert-title { color: var(--accent); }
+  .cert-sum { color: var(--ink-2); }
+  .cert-meta { font-size: var(--step--1); color: var(--muted); }
+  .cert-note { margin-top: var(--s3); }
 </style>

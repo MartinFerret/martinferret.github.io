@@ -1,4 +1,4 @@
-# martinferret.github.io
+# martinferret.dev
 
 Astro site, light theme. Design tokens in `src/styles/tokens.css`, the shared UI kit (spacing system, panels, buttons,
 cards, charts layout) in `src/styles/kit.css`, base styles in `src/styles/global.css`.

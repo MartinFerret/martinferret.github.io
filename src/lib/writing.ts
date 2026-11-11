@@ -1,5 +1,6 @@
 import { getCollection } from 'astro:content';
 import { getMediumArticles } from './medium';
+import { certificatesArticles } from './certificates';
 
 // Drafts are visible in `astro dev` only: they never reach the production build.
 export async function getPosts() {
@@ -9,5 +10,5 @@ export async function getPosts() {
 
 /** Writing is listed in the navigation only when there is something to read. */
 export async function hasWriting() {
-  return (await getPosts()).length > 0 || (await getMediumArticles()).length > 0;
+  return (await getPosts()).length > 0 || (await getMediumArticles()).length > 0 || certificatesArticles.length > 0;
 }

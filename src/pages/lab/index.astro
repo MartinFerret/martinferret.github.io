@@ -18,14 +18,14 @@ const icons: Record<string, string> = {
 };
 const method = [
   { t: 'Pin everything', d: 'Compiler versions, external commits and machine context are recorded with every result.', i: 'pin', tone: 'blue' },
-  { t: 'Measure the same way', d: 'Three runs of tsc with extended diagnostics per condition, median reported with the range.', i: 'ruler', tone: 'violet' },
+  { t: 'Measure the same way', d: 'Several runs of tsc with extended diagnostics per condition, after a discarded warm-up, conditions interleaved. Median reported with the range.', i: 'ruler', tone: 'violet' },
   { t: 'Change one thing', d: 'A fix changes a single thing and keeps the same type safety.', i: 'one', tone: 'coral' },
   { t: 'Prove type safety', d: 'A safety file lists usages that must still fail to compile. The run stops if one passes.', i: 'shield', tone: 'mint' },
   { t: 'Publish any verdict', d: 'Confirmed, rejected or open. Negative results are published too.', i: 'doc', tone: 'amber' },
   { t: 'Know the limits', d: 'Compare conditions on the same machine only. Counters may differ across compilers.', i: 'scale', tone: 'neutral' },
 ];
 ---
-<Base title="Lab" description="TypeScript Performance Lab: measured, reproducible experiments on how fast TypeScript checks your types.">
+<Base fullTitle="TypeScript Performance Lab | Martin Ferret" title="Lab" description="Reproducible experiments on TypeScript type-checking speed: TypeScript 6 vs 7, memory, and type patterns that slow the checker, with raw results." crumbs={[["Lab", '/lab/']]}>
   <PageHero title="TypeScript Performance Lab" lede="Each experiment ships its code, the exact command that produced the numbers, and the raw results with the machine they ran on.">
     <a class="cta cta--soft" href="#experiments">See the experiments</a>
     <a class="cta cta--onblue" href="#method">How it’s measured</a>
@@ -62,7 +62,7 @@ const method = [
       <div class="head-center">
         <Tag kind="lab">Method</Tag>
         <h2 id="method-title">Same protocol, every experiment</h2>
-        <p>Six rules that make a number worth publishing.{site.labRepo && <> The <a class="link" href={site.labRepo}>lab repository</a> has the scripts.</>}</p>
+        <p>Six rules that make a number worth publishing. The <a class="link" href="/typescript-performance-lab/method/">notebook's method page</a> has the full protocol{site.labRepo && <>, and the <a class="link" href={site.labRepo}>lab repository</a> has the scripts</>}. To apply it to your own codebase, see <a class="link" href="/hire/">Work with me</a>.</p>
       </div>
       <ol class="g3 rules" role="list">
         {method.map((m, i) => (

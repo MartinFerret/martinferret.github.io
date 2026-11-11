@@ -1,0 +1,88 @@
+---
+// One page per talk, workshop and guest podcast. Built only from src/data/talks.ts and src/data/events.ts.
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Tag from '../../components/Tag.astro';
+import StatusPill from '../../components/StatusPill.astro';
+import { talkPages, type TalkPage } from '../../lib/talks';
+import { eventWhen, upcoming } from '../../lib/record';
+import { site } from '../../data/site';
+import { abs, personRef } from '../../lib/schema';
+import { ogPathFor } from '../../lib/og';
+import { arrow } from '../../lib/ui';
+
+export function getStaticPaths() {
+  return talkPages().map((t) => ({ params: { slug: t.slug }, props: { t } }));
+}
+const { t } = Astro.props as { t: TalkPage };
+const e = t.appearance;
+const isNext = e ? upcoming().includes(e) : false;
+const kindWord = t.kind === 'Podcast' ? 'podcast episode' : t.kind.toLowerCase();
+const when = e ? eventWhen(e) : '';
+const where = e ? (e.kind === 'Podcast' ? `the ${e.where}` : e.where) : '';
+
+// The direct answer, in two sentences, from the data only.
+const lede = t.bookable
+  ? `A ${t.level?.toLowerCase()} talk by ${site.name}, TypeScript performance expert, available to book online or on site, in English or French. Format: ${t.format}.`
+  : e?.kind === 'Podcast'
+    ? `${site.name} ${isNext ? 'is' : 'was'} a guest on ${where} for this episode${e.date || e.month ? `, ${isNext ? 'planned for' : 'recorded'} ${when}` : ''}.${isNext ? ' The episode is not published yet.' : ''}`
+    : `${site.name} ${isNext ? 'gives' : 'gave'} this ${kindWord} at ${where}${e?.format ? `, ${e.format.toLowerCase()}` : ''}, on ${when}.`;
+
+const description = (t.abstract ?? lede).replace(/\s+/g, ' ').slice(0, 152).replace(/\s\S*$/, '') + (((t.abstract ?? lede).length > 152) ? '...' : '');
+const shortTitle = t.title.length + 16 <= 60 ? `${t.title} | ${site.name}` : t.title.split(/[:.]/)[0].length + 16 <= 60 ? `${t.title.split(/[:.]/)[0]} | ${site.name}` : t.title.slice(0, 59);
+const article = {
+  '@type': 'Article',
+  headline: t.title,
+  description,
+  author: personRef(),
+  publisher: personRef(),
+  url: abs(`/talks/${t.slug}/`),
+  mainEntityOfPage: abs(`/talks/${t.slug}/`),
+  image: abs(await ogPathFor(`/talks/${t.slug}/`)),
+  inLanguage: 'en',
+  ...(e?.date ? { datePublished: e.date } : {}),
+  about: ['TypeScript'],
+};
+---
+<Base fullTitle={shortTitle} title={t.title} description={description} type="article" schema={[article]} crumbs={[["Speaking", '/speaking/'], [t.title, `/talks/${t.slug}/`]]}>
+  <PageHero title={t.title} lede={lede} crumb={{ href: '/speaking/', label: 'Speaking', after: t.bookable ? 'Talk you can book' : t.kind }}>
+    <a class="cta cta--soft" href="/speak/">Invite me to speak <Fragment set:html={arrow} /></a>
+    <a class="cta cta--onblue" href="/speaking/">All talks and podcasts</a>
+  </PageHero>
+
+  <section class="wrap block" aria-labelledby="details" data-reveal>
+    <div class="talk-grid">
+      <div class="kcard">
+        <span class="kcard-tags"><Tag kind={t.kind === 'Podcast' ? 'podcast' : t.kind === 'Workshop' ? 'workshop' : 'talk'}>{t.kind}</Tag>{e && <StatusPill status={isNext ? 'upcoming' : 'delivered'} />}</span>
+        <h2 id="details">{t.abstract ? 'Abstract' : 'Details'}</h2>
+        {t.abstract && <p class="read">{t.abstract}</p>}
+        {!t.abstract && <p class="read">No abstract has been published for this {kindWord} yet. The details below come from the event.</p>}
+      </div>
+      <dl class="kcard facts">
+        {t.level && <><dt>Level</dt><dd>{t.level}</dd></>}
+        {(t.format) && <><dt>Format</dt><dd>{t.format}</dd></>}
+        {e && <><dt>Where</dt><dd>{e.url ? <a class="link" href={e.url}>{e.where}</a> : e.where}</dd></>}
+        {e && <><dt>When</dt><dd>{when}{e.time && `, ${e.time}`}</dd></>}
+        {e?.role && <><dt>Role</dt><dd>{e.role}</dd></>}
+        {e?.language && <><dt>Language</dt><dd>{e.language}</dd></>}
+        {t.bookable && <><dt>Languages</dt><dd>English or French</dd></>}
+      </dl>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="proof" data-reveal>
+    <div class="kcard">
+      <h2 id="proof">Built on measured work</h2>
+      <p class="read">Every talk comes from a published experiment in the <a class="link" href="/lab/">TypeScript Performance Lab</a> or a fix merged into TypeScript's own repositories, listed on <a class="link" href="/work/">Work</a>. Bio, photo and abstracts for organizers are on <a class="link" href="/speak/">Invite me to speak</a>.</p>
+      <p><a class="cta cta--primary" href="/speak/">Invite me to speak <Fragment set:html={arrow} /></a></p>
+    </div>
+  </section>
+</Base>
+<style>
+  .talk-grid { display: grid; gap: var(--grid-gap); align-items: start; }
+  .talk-grid h2 { font-size: var(--fs-h2); }
+  .facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 10px 20px; margin: 0; }
+  .facts dt { font-size: var(--step--1); font-weight: 600; color: var(--muted); }
+  .facts dd { margin: 0; color: var(--ink-2); }
+  @media (min-width: 960px) { .talk-grid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); } }
+</style>

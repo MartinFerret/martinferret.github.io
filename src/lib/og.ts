@@ -5,6 +5,9 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { experiments, headline } from './lab';
 import { getPosts } from './writing';
+import { talkPages } from './talks';
+import { podcasts } from '../data/podcasts';
+import { site } from '../data/site';
 
 export interface OgPage { slug: string; title: string; kicker: string; stat?: { value: string; label: string } }
 
@@ -13,6 +16,10 @@ export async function ogPages(): Promise<OgPage[]> {
   const posts = await getPosts();
   return [
     { slug: 'index', title: 'Faster TypeScript for the age of AI.', kicker: 'TypeScript performance' },
+    { slug: 'hire', title: 'TypeScript performance expert for engineering teams', kicker: 'Work with me' },
+    { slug: 'meetup', title: site.meetup.name, kicker: 'Free online meetup, in French' },
+    ...talkPages().map((t) => ({ slug: `talks/${t.slug}`, title: t.title, kicker: t.bookable ? 'Talk' : t.kind })),
+    ...podcasts.map((p) => ({ slug: `podcasts/${p.slug}`, title: p.name, kicker: `Podcast, co-hosted with ${p.cohost.name}` })),
     { slug: 'work', title: 'Open source work in TypeScript’s own repositories', kicker: 'Work' },
     { slug: 'lab', title: 'TypeScript Performance Lab', kicker: 'Lab' },
     ...experiments.map((e) => {
@@ -21,9 +28,9 @@ export async function ogPages(): Promise<OgPage[]> {
     }),
     { slug: 'speaking', title: 'Talks, workshops, podcasts and meetups', kicker: 'Speaking' },
     { slug: 'speak', title: 'Invite me to speak', kicker: 'For organizers' },
-    { slug: 'writing', title: 'Writing on TypeScript and type-checking performance', kicker: 'Writing' },
+    { slug: 'writing', title: 'Articles on JavaScript and TypeScript', kicker: 'Writing' },
     ...posts.map((p) => ({ slug: `writing/${p.id}`, title: p.data.title, kicker: 'Article' })),
-    { slug: 'about', title: 'About Martin', kicker: 'About' },
+    { slug: 'about', title: 'About Martin Ferret', kicker: 'About' },
     { slug: 'timeline', title: 'Contributions, talks and experiments, by date', kicker: 'Timeline' },
   ];
 }

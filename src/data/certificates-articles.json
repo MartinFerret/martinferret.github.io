@@ -1,0 +1,216 @@
+{
+  "source": "https://certificates.dev/blog (pages 1 to 19) and https://certificates.dev/sitemap.xml, author checked on each article page (byline and BlogPosting author.name)",
+  "checkedOn": "2026-11-11",
+  "articles": [
+    {
+      "title": "DOM Events & Modern Patterns Cheat Sheet",
+      "date": "2026-11-10",
+      "summary": "Learn modern DOM event handling, including propagation, delegation, listener cleanup, custom events, forms, state management, efficient mutations, and...",
+      "url": "https://certificates.dev/blog/dom-events-modern-patterns-cheat-sheet",
+      "typescript": false
+    },
+    {
+      "title": "this in JavaScript: Binding Rules and Arrow Functions",
+      "date": "2026-11-10",
+      "summary": "JavaScript’s this depends on the call site, with explicit binding and new taking precedence; arrow functions inherit this, making them useful for callbacks...",
+      "url": "https://certificates.dev/blog/this-in-javascript-binding-rules-and-arrow-functions",
+      "typescript": false
+    },
+    {
+      "title": "Iterator Helpers: Lazy Pipelines in JavaScript",
+      "date": "2026-10-06",
+      "summary": "ES2025 added map, filter, take and drop to iterators. Learn how lazy pipelines skip intermediate arrays, handle infinite sequences, and where they do not help.",
+      "url": "https://certificates.dev/blog/iterator-helpers-lazy-pipelines-in-javascript",
+      "typescript": false
+    },
+    {
+      "title": "AbortController: Cancellation and Cleanup in JavaScript",
+      "date": "2026-09-22",
+      "summary": "AbortController does more than cancel a fetch. Learn how one signal cleans up event listeners, times out requests, and combines with AbortSignal.any().",
+      "url": "https://certificates.dev/blog/abortcontroller-cancellation-and-cleanup-in-javascript",
+      "typescript": false
+    },
+    {
+      "title": "Proxy and Reflect: Metaprogramming in JavaScript",
+      "date": "2026-09-08",
+      "summary": "Learn how JavaScript Proxy and Reflect intercept object operations: the 13 traps and why Reflect matters.",
+      "url": "https://certificates.dev/blog/proxy-and-reflect-metaprogramming-in-javascript",
+      "typescript": false
+    },
+    {
+      "title": "Intl.NumberFormat and Intl.RelativeTimeFormat: The Traps",
+      "date": "2026-08-25",
+      "summary": "Intl.NumberFormat and Intl.RelativeTimeFormat replace your formatting library. Defaults, traps, and the 58x performance mistake to avoid.",
+      "url": "https://certificates.dev/blog/intlnumberformat-and-intlrelativetimeformat-the-traps",
+      "typescript": false
+    },
+    {
+      "title": "The flat() and flatMap() methods",
+      "date": "2026-08-11",
+      "summary": "Learn how JavaScript's flat() and flatMap() work: default depth, flat(Infinity), dropping holes, and using flatMap as a combined map and filter.",
+      "url": "https://certificates.dev/blog/the-flat-and-flatmap-methods",
+      "typescript": false
+    },
+    {
+      "title": "JavaScript Generators: Writing Iterators With yield",
+      "date": "2026-07-21",
+      "summary": "JavaScript generators explained: write lazy iterators with yield, handle infinite sequences, and skip the protocol boilerplate.",
+      "url": "https://certificates.dev/blog/javascript-generators-writing-iterators-with-yield",
+      "typescript": false
+    },
+    {
+      "title": "JavaScript Set Methods: Native Set Theory, Finally",
+      "date": "2026-07-07",
+      "summary": "Seven new methods landed on JavaScript's Set: union, intersection, difference, and more. Baseline since 2024. A practical guide with real-world examples.",
+      "url": "https://certificates.dev/blog/javascript-set-methods-native-set-theory-finally",
+      "typescript": false
+    },
+    {
+      "title": "Promise.withResolvers(): The Deferred Pattern Built-In",
+      "date": "2026-06-23",
+      "summary": "Promise.withResolvers() replaces the manual deferred pattern in JavaScript. One destructuring, no executor, no let. ES2024, supported in all modern runtimes.",
+      "url": "https://certificates.dev/blog/promisewithresolvers-the-deferred-pattern-built-in",
+      "typescript": false
+    },
+    {
+      "title": "`using` in JavaScript: Automatic Resource Management",
+      "date": "2026-06-09",
+      "summary": "Learn how the new using keyword and Symbol.dispose replace try/finally for cleaner resource management in JavaScript. With ES2026 support details.",
+      "url": "https://certificates.dev/blog/using-in-javascript-automatic-resource-management",
+      "typescript": false
+    },
+    {
+      "title": "Closures Explained: How Functions Remember Their Scope",
+      "date": "2026-05-26",
+      "summary": "A function in JavaScript remembers the scope it was created in, even after that scope has finished executing.",
+      "url": "https://certificates.dev/blog/closures-explained-how-functions-remember-their-scope",
+      "typescript": false
+    },
+    {
+      "title": "JavaScript finally gets dates right",
+      "date": "2026-05-12",
+      "summary": "JavaScript's Date object is 30 years old, copied from Java, and never really fixed.",
+      "url": "https://certificates.dev/blog/javascript-finally-gets-dates-right",
+      "typescript": false
+    },
+    {
+      "title": "Nullish Coalescing Operator",
+      "date": "2026-04-28",
+      "summary": "Understand the difference between || and ?? in JavaScript, and learn how the nullish coalescing operator avoids common pitfalls with falsy values like 0...",
+      "url": "https://certificates.dev/blog/nullish-coalescing-operator",
+      "typescript": false
+    },
+    {
+      "title": "JavaScript Mistakes That Quietly Destroy Production Apps",
+      "date": "2026-04-14",
+      "summary": "Some JavaScript mistakes don’t crash your app, they slowly degrade performance, reliability, and user trust. Here are the ones that cost the most in production.",
+      "url": "https://certificates.dev/blog/javascript-mistakes-that-quietly-destroy-production-apps",
+      "typescript": false
+    },
+    {
+      "title": "Custom Errors in JavaScript: Extending Error the Right Way",
+      "date": "2026-03-17",
+      "summary": "Learn how to extend JavaScript’s Error class correctly, build error hierarchies, and wrap exceptions for clean, scalable error handling.",
+      "url": "https://certificates.dev/blog/custom-errors-in-javascript-extending-error-the-right-way",
+      "typescript": false
+    },
+    {
+      "title": "JavaScript Modules Explained: The Foundation of Modern JS Applications",
+      "date": "2026-03-03",
+      "summary": "A deep, practical explanation of JavaScript ES Modules: execution model, shared exports, strict mode, browser rules, and real-world implications.",
+      "url": "https://certificates.dev/blog/javascript-modules-explained-the-foundation-of-modern-js-applications",
+      "typescript": false
+    },
+    {
+      "title": "Vanilla JavaScript in 2026: Why You Still Can’t Ignore It",
+      "date": "2026-02-03",
+      "summary": "Every framework claims to “fix” JavaScript.",
+      "url": "https://certificates.dev/blog/vanilla-javascript-in-2026-why-you-still-cant-ignore-it",
+      "typescript": false
+    },
+    {
+      "title": "The JavaScript Event Loop: The Skill That Separates Juniors From Seniors",
+      "date": "2026-01-21",
+      "summary": "Promises, async/await, timers…everything in JavaScript relies on the event loop. Mastering it changes how you write and debug code.",
+      "url": "https://certificates.dev/blog/the-javascript-event-loop-the-skill-that-separates-juniors-from-seniors",
+      "typescript": false
+    },
+    {
+      "title": "JavaScript Isn’t Slow. You’re Just Using It Wrong.",
+      "date": "2026-01-06",
+      "summary": "JavaScript is not inherently slow. Poor architectural choices are. Here’s how modern JavaScript actually performs, and where developers really lose speed.",
+      "url": "https://certificates.dev/blog/javascript-isnt-slow-youre-just-using-it-wrong",
+      "typescript": false
+    },
+    {
+      "title": "Understanding try...catch in JavaScript: How to Handle Errors Properly",
+      "date": "2025-12-21",
+      "summary": "Learn how JavaScript errors work and how to prevent your app from crashing using try...catch.",
+      "url": "https://certificates.dev/blog/understanding-trycatch-in-javascript-how-to-handle-errors-properly",
+      "typescript": false
+    },
+    {
+      "title": "The 8 JavaScript Errors Every Developer Should Understand",
+      "date": "2025-12-05",
+      "summary": "Understanding JavaScript errors is essential for debugging efficiently. Discover the 8 native error types with clear explanations and practical examples.",
+      "url": "https://certificates.dev/blog/the-8-javascript-errors-every-developer-should-understand",
+      "typescript": false
+    },
+    {
+      "title": "Inside the JavaScript Event Loop: How the Runtime Actually Works",
+      "date": "2025-11-18",
+      "summary": "Understand the JavaScript event loop in depth.",
+      "url": "https://certificates.dev/blog/inside-the-javascript-event-loop-how-the-runtime-actually-works",
+      "typescript": false
+    },
+    {
+      "title": "Document Fragments: The Secret to Fast, Clean DOM Manipulation in JavaScript",
+      "date": "2025-11-06",
+      "summary": "Discover how DocumentFragment can dramatically speed up DOM manipulation in JavaScript.",
+      "url": "https://certificates.dev/blog/document-fragments-the-secret-to-fast-clean-dom-manipulation-in-javascript",
+      "typescript": false
+    },
+    {
+      "title": "Template Literals in JavaScript: Write Strings the Way They Were Meant to Be",
+      "date": "2025-10-23",
+      "summary": "Learn how template literals make JavaScript string handling modern, readable, and expressive through multi-line syntax, interpolation, and tag functions.",
+      "url": "https://certificates.dev/blog/template-literals-in-javascript-write-strings-the-way-they-were-meant-to-be",
+      "typescript": false
+    },
+    {
+      "title": "Dynamic Imports in JavaScript: Load Smarter, Not Sooner",
+      "date": "2025-10-15",
+      "summary": "Learn how to use dynamic imports in JavaScript to boost performance, reduce bundle size, and load code only when needed.",
+      "url": "https://certificates.dev/blog/dynamic-imports-in-javascript-load-smarter-not-sooner",
+      "typescript": false
+    },
+    {
+      "title": "Unravel the mystery of JavaScript's event bubbling and take control of your event handling",
+      "date": "2025-10-08",
+      "summary": "Ever clicked a button and had unexpected things happen to its parent elements?",
+      "url": "https://certificates.dev/blog/unravel-the-mystery-of-javascripts-event-bubbling-and-take-control-of-your-event-handling-1",
+      "typescript": false
+    },
+    {
+      "title": "Promises in JavaScript: Receipts for Future Values and Advanced Patterns",
+      "date": "2025-09-30",
+      "summary": "JavaScript Promises manage future values with clean async handling.",
+      "url": "https://certificates.dev/blog/promises-in-javascript-receipts-for-future-values-and-advanced-patterns",
+      "typescript": false
+    },
+    {
+      "title": "Closures: private state, tiny surface",
+      "date": "2025-09-08",
+      "summary": "JavaScript closures give functions memory: private state without globals, safer APIs, and predictable behavior. See what they are, when to use them, and why.",
+      "url": "https://certificates.dev/blog/closures-private-state-tiny-surface",
+      "typescript": false
+    },
+    {
+      "title": "Event Delegation: One Listener to Rule Them All",
+      "date": "2025-07-14",
+      "summary": "Learn how event delegation in JavaScript lets you use a single event listener to handle clicks on multiple child elements efficiently, ideal for dynamic UIs...",
+      "url": "https://certificates.dev/blog/event-delegation-one-listener-to-rule-them-all",
+      "typescript": false
+    }
+  ]
+}

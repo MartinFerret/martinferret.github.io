@@ -11,13 +11,18 @@ import { pastEvents, upcoming, eventId, eventWhen } from '../lib/record';
 import { site } from '../data/site';
 import { formatDate } from '../lib/format';
 import { arrow } from '../lib/ui';
+import { podcasts } from '../data/podcasts';
+import { talkPages, talkFor } from '../lib/talks';
 
 // Upcoming and past are computed from dates at build: an item moves to "Past" on its own once its date has passed.
 const next = upcoming();
 const past = pastEvents().filter((e) => e.kind !== 'Milestone');
+const talks = talkPages();
+const bookable = talks.filter((t) => t.bookable);
+const guestPodcasts = talks.filter((t) => t.kind === 'Podcast');
 const kindTag = (k: string) => (k === 'Podcast' ? 'podcast' : k === 'Community' ? 'community' : k === 'Workshop' ? 'workshop' : 'talk') as 'podcast' | 'community' | 'workshop' | 'talk';
 ---
-<Base title="Speaking" description="Upcoming and past talks, workshops, podcasts and meetups by Martin Ferret, including What's up TypeScript France.">
+<Base fullTitle="TypeScript Talks, Workshops and Podcasts | Martin Ferret" title="Speaking" description="Talks, workshops and podcasts by Martin Ferret on TypeScript performance, TypeScript 7 and typed AI agents, plus the meetup he runs." crumbs={[["Speaking", '/speaking/']]}>
   <PageHero title="Speaking" lede="Talks, workshops, podcasts and meetups on TypeScript performance, the compiler and typed AI agents. Every talk comes from a published experiment or a merged fix.">
     <a class="cta cta--soft" href="/speak/">Invite me to speak <Fragment set:html={arrow} /></a>
     <a class="cta cta--onblue" href={site.links.sessionize} target="_blank" rel="noopener">Sessionize profile</a>
@@ -33,7 +38,7 @@ const kindTag = (k: string) => (k === 'Podcast' ? 'podcast' : k === 'Community' 
               <div class="up-art">{e.kind === 'Podcast' ? <PodcastArt /> : e.kind === 'Community' ? <MeetupArt side="right" /> : <Pizza />}</div>
               <div class="up-body">
                 <span class="up-tags"><Tag kind={kindTag(e.kind)}>{e.role ? `${e.role}, ${e.kind === 'Community' ? 'meetup' : e.kind.toLowerCase()}` : e.kind}</Tag><StatusPill status="upcoming" /></span>
-                <h3 class="up-title" id={`up-${i}`}>{e.kind === 'Podcast' ? e.where : e.title}</h3>
+                <h3 class="up-title" id={`up-${i}`}>{e.kind === 'Community' ? <a href="/meetup/">{e.title}</a> : talkFor(e) ? <a href={`/talks/${talkFor(e)!.slug}/`}>{e.kind === 'Podcast' ? e.where : e.title}</a> : (e.kind === 'Podcast' ? e.where : e.title)}</h3>
                 {e.kind === 'Podcast' && <p class="up-sub">Episode: {e.title}</p>}
                 <p class="up-when"><b>{eventWhen(e)}</b>{e.time && `, ${e.time}`}{e.format && `. ${e.format}`}{e.language && `, in ${e.language}`}.</p>
                 {e.abstract && <p class="up-text">{e.abstract}</p>}
@@ -41,7 +46,7 @@ const kindTag = (k: string) => (k === 'Podcast' ? 'podcast' : k === 'Community' 
                   <div class="cluster up-links">
                     {site.meetup.registration && <a class="cta cta--primary" href={site.meetup.registration} target="_blank" rel="noopener">Register <Fragment set:html={arrow} /></a>}
                     <a class:list={['cta', site.meetup.registration ? 'cta--outline' : 'cta--primary']} href={site.meetup.callForTalks} target="_blank" rel="noopener">Propose a talk <Fragment set:html={arrow} /></a>
-                    <a class="cta cta--outline" href={site.links.meetup} target="_blank" rel="noopener">Meetup page</a>
+                    <a class="cta cta--outline" href="/meetup/">About the meetup</a>
                   </div>
                 )}
                 {e.kind === 'Community' && <p class="meta">Call for talks open until {formatDate(site.meetup.callForTalksCloses)}. <a class="link" href={site.meetup.codeOfConduct} target="_blank" rel="noopener">Code of conduct</a>.</p>}
@@ -56,9 +61,40 @@ const kindTag = (k: string) => (k === 'Podcast' ? 'podcast' : k === 'Community' 
   {past.length > 0 && (
     <section class="wrap block" aria-labelledby="past-title" data-reveal>
       <div class="head-row"><div><h2 id="past-title">Past</h2><p>Newest first.</p></div></div>
-      <ul class="g2" role="list">{past.map((e, i) => <li style={`--i:${i}`}><StageCard e={e} i={i} heading /></li>)}</ul>
+      <ul class="g2" role="list">{past.map((e, i) => <li style={`--i:${i}`}><StageCard e={e} i={i} heading href={talkFor(e) ? `/talks/${talkFor(e)!.slug}/` : undefined} /></li>)}</ul>
     </section>
   )}
+
+  <section class="wrap block" aria-labelledby="podcasts-title" data-reveal>
+    <div class="head-row"><div><h2 id="podcasts-title">Podcasts</h2><p>The show Martin co-hosted, and his guest appearances.</p></div></div>
+    <ul class="g2" role="list">
+      {podcasts.map((p, i) => (
+        <li style={`--i:${i}`}>
+          <a class="kcard pod" href={`/podcasts/${p.slug}/`}>
+            <span class="kcard-tags"><Tag kind="podcast">{p.role.split(',')[0]}, in {p.language}</Tag><span class="badge badge--closed">{p.status === 'past' ? 'Past' : 'Active'}</span></span>
+            <h3 class="kcard-title">{p.name}</h3>
+            <p class="kcard-text">{p.summary}</p>
+          </a>
+        </li>
+      ))}
+      {guestPodcasts.map((t, i) => (
+        <li style={`--i:${i + podcasts.length}`}>
+          <a class="kcard pod" href={`/talks/${t.slug}/`}>
+            <span class="kcard-tags"><Tag kind="podcast">Guest</Tag></span>
+            <h3 class="kcard-title">{t.appearance?.where}</h3>
+            <p class="kcard-text">Episode: {t.title}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="wrap block" aria-labelledby="book-title" data-reveal>
+    <div class="head-row"><div><h2 id="book-title">Talks you can book</h2><p>Each one has its own page with the abstract, level and format. Bio and photo for organizers are on <a class="link" href="/speak/">Invite me to speak</a>.</p></div></div>
+    <ul class="talk-links" role="list">
+      {bookable.map((t) => <li><a class="kcard" href={`/talks/${t.slug}/`}><span class="kcard-title">{t.title}</span><span class="meta">{t.level}, {t.format}</span></a></li>)}
+    </ul>
+  </section>
 
   <section class="frame invite-frame" aria-labelledby="invite-title" data-reveal>
     <div class="wrap invite">
@@ -87,4 +123,9 @@ const kindTag = (k: string) => (k === 'Podcast' ? 'podcast' : k === 'Community' 
   .invite { display: grid; justify-items: center; gap: var(--s2); text-align: center; }
   .invite h2 { font-size: var(--fs-h1); max-width: 18ch; }
   .invite p { color: var(--ink-2); }
+  .pod { height: 100%; }
+  .up-title a:hover { color: var(--accent); }
+  .talk-links { list-style: none; display: grid; gap: 12px; }
+  .talk-links .kcard { gap: 4px; padding: 18px 22px; }
+  .talk-links .kcard:hover .kcard-title { color: var(--accent); }
 </style>

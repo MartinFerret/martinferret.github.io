@@ -41,7 +41,7 @@ export const events: SiteEvent[] = [
   {
     kind: 'Podcast',
     status: 'upcoming',
-    title: 'What TypeScript 7 and 7.1 Really Change for Angular Developers',
+    title: 'What TypeScript 7 Really Changes for Angular Teams',
     where: 'Angular Master Podcast',
     role: 'Guest',
     // Recording planned for December 2026, exact date to be confirmed.

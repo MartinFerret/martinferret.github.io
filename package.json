@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node tools/llms-full.mjs",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "astro build && node --test tests/*.test.mjs",
+    "test": "npm run build && node --test tests/*.test.mjs",
     "test:only": "node --test tests/*.test.mjs"
   },
   "dependencies": {

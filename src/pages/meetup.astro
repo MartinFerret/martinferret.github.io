@@ -1,0 +1,74 @@
+---
+// What's up TypeScript France: the meetup Martin runs. The next date comes from events.ts.
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Tag from '../components/Tag.astro';
+import MeetupArt from '../components/MeetupArt.astro';
+import { site } from '../data/site';
+import { events } from '../data/events';
+import { eventWhen } from '../lib/record';
+import { formatDate } from '../lib/format';
+import { abs, personRef } from '../lib/schema';
+import { arrow } from '../lib/ui';
+
+const next = events.filter((e) => e.kind === 'Community' && e.status === 'upcoming' && e.date).sort((a, b) => a.date!.localeCompare(b.date!))[0];
+const lede = 'A free, online TypeScript meetup in French, open to everyone: two 20-minute talks, live questions and the TypeScript news of the moment. Hosted by Martin Ferret.';
+// 7 pm Paris time on the event date. Paris is UTC+1 in winter (CET); the event time in events.ts says so.
+const startDate = next?.date ? `${next.date}T19:00:00+01:00` : undefined;
+const event = next && {
+  '@type': 'Event',
+  name: next.title,
+  description: lede,
+  startDate,
+  eventStatus: 'https://schema.org/EventScheduled',
+  eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
+  location: { '@type': 'VirtualLocation', url: site.meetup.registration ?? site.links.meetup },
+  isAccessibleForFree: true,
+  inLanguage: 'fr',
+  organizer: personRef(),
+  image: abs('/og/meetup.png'),
+  url: abs('/meetup/'),
+  offers: { '@type': 'Offer', url: site.meetup.registration, price: 0, priceCurrency: 'EUR', availability: 'https://schema.org/InStock' },
+};
+---
+<Base fullTitle="What's up TypeScript France: online TypeScript meetup" title={site.meetup.name} description="A free online TypeScript meetup in French: two 20-minute talks, live questions and TypeScript news. Next edition January 7, 2027." schema={event ? [event] : []} crumbs={[[site.meetup.name, '/meetup/']]}>
+  <PageHero title={site.meetup.name} lede={lede}>
+    {site.meetup.registration && <a class="cta cta--soft" href={site.meetup.registration} target="_blank" rel="noopener">Register <Fragment set:html={arrow} /></a>}
+    <a class="cta cta--onblue" href={site.meetup.callForTalks} target="_blank" rel="noopener">Propose a talk</a>
+  </PageHero>
+
+  {next && (
+    <section class="wrap block" aria-labelledby="next-title" data-reveal>
+      <div class="next">
+        <div class="next-art" aria-hidden="true"><MeetupArt side="left" /></div>
+        <div class="kcard next-body">
+          <Tag kind="community">Next edition</Tag>
+          <h2 id="next-title">{next.title}</h2>
+          <p class="next-when"><b>{eventWhen(next)}</b>, {next.time}. {next.format}, in {next.language}, free.</p>
+          <p class="kcard-text">{next.abstract}</p>
+          <div class="cluster">
+            {site.meetup.registration && <a class="cta cta--primary" href={site.meetup.registration} target="_blank" rel="noopener">Register <Fragment set:html={arrow} /></a>}
+            <a class="cta cta--outline" href={site.meetup.callForTalks} target="_blank" rel="noopener">Propose a talk</a>
+          </div>
+          <p class="meta">Call for talks open until {formatDate(site.meetup.callForTalksCloses)}. <a class="link" href={site.meetup.codeOfConduct} target="_blank" rel="noopener">Code of conduct</a>. <a class="link" href={site.links.meetup} target="_blank" rel="noopener">Meetup page on GitHub</a>.</p>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="wrap block" aria-labelledby="host-title" data-reveal>
+    <div class="kcard">
+      <h2 id="host-title">Who runs it</h2>
+      <p class="read">The meetup is run by {site.name}, a TypeScript expert focused on type-checking performance. See his <a class="link" href="/speaking/">talks and podcasts</a>, the <a class="link" href="/lab/">TypeScript Performance Lab</a>, or <a class="link" href="/speak/">invite him to speak</a> at your own event.</p>
+    </div>
+  </section>
+</Base>
+<style>
+  .next { display: grid; gap: var(--grid-gap); align-items: center; }
+  .next-art { display: none; }
+  .next-body { gap: 14px; }
+  .next-body h2 { font-size: var(--fs-h2); }
+  .next-when { color: var(--ink-2); }
+  .next-when b { color: var(--ink); }
+  @media (min-width: 960px) { .next { grid-template-columns: minmax(0, 0.6fr) minmax(0, 1.4fr); } .next-art { display: grid; place-items: center; } }
+</style>

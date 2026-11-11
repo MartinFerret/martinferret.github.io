@@ -59,12 +59,14 @@ test('work page lists every contribution once, in its group', () => {
   }
 });
 
-test('main navigation: at most six items, Work first, Invite me right after Speaking', () => {
-  const nav = read('index.html').match(/<ul class="nav">([\s\S]*?)<\/ul>/)[1];
+test('main navigation: at most six items, Work first, Work with me last; Invite me reachable from the footer', () => {
+  const html = read('index.html');
+  const nav = html.match(/<ul class="nav">([\s\S]*?)<\/ul>/)[1];
   const items = [...nav.matchAll(/<a href="([^"]+)"/g)].map((m) => m[1]);
   assert.ok(items.length <= 6, `nav has ${items.length} items`);
   assert.equal(items[0], '/work/');
-  assert.equal(items[items.indexOf('/speaking/') + 1], '/speak/');
+  assert.equal(items[items.length - 1], '/hire/');
+  assert.ok(html.match(/<footer[\s\S]*?<\/footer>/)[0].includes('href="/speak/"'), 'footer links to /speak/');
 });
 
 test('search index covers contributions by number', () => {

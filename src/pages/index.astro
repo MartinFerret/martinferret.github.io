@@ -16,6 +16,8 @@ import { getRecord, metricsFrom, metric, latestDelivered, eventId, upcoming } fr
 import { experiments } from '../lib/lab';
 import { arrow } from '../lib/ui';
 import { formatDate, breakable } from '../lib/format';
+import { person, website } from '../lib/schema';
+import { talkFor } from '../lib/talks';
 
 const list = await getContributions();
 const { rows } = await getRecord();
@@ -47,7 +49,7 @@ const others = msMerged.filter((c) => c !== featured).slice(0, 2);
 const podcast = upcoming().find((e) => e.kind === 'Podcast');
 const meetup = upcoming().find((e) => e.kind === 'Community' && e.date);
 ---
-<Base>
+<Base fullTitle="Martin Ferret, TypeScript Performance Expert" description="Martin Ferret measures and fixes TypeScript type-checking performance: fixes merged into Microsoft's TypeScript repos, a public Lab, talks and audits." schema={[person(), website()]}>
   <!-- 1. Hero: two balanced halves, words and the portrait -->
   <section class="frame hero-panel" aria-labelledby="hero-title">
    <div class="wrap hero">
@@ -55,7 +57,8 @@ const meetup = upcoming().find((e) => e.kind === 'Community' && e.date);
       <h1 class="hero-title" id="hero-title">Faster TypeScript for the age of AI.</h1>
       <p class="hero-sub">I measure what slows the type checker down and fix it upstream, so types keep catching mistakes, whoever wrote the code.</p>
       <div class="cluster hero-actions">
-        <a class="cta cta--soft" href="/work/">See my work <Fragment set:html={arrow} /></a>
+        <a class="cta cta--soft" href="/hire/">Work with me <Fragment set:html={arrow} /></a>
+        <a class="cta cta--onblue" href="/work/">See my work</a>
         {meetup && <a class="cta cta--onblue" href="#next-event">Next event</a>}
       </div>
     </div>
@@ -162,8 +165,8 @@ const meetup = upcoming().find((e) => e.kind === 'Community' && e.date);
           <p>Talks, workshops and podcasts built on the same measurements, so the audience can check the numbers afterwards.</p>
           <a class="cta cta--primary" href={contactHref}>Invite me to speak <Fragment set:html={arrow} /></a>
         </div>
-        {podcast && <StageCard e={podcast} i={0} href={`/speaking/#${eventId(podcast)}`} />}
-        {workshop && <StageCard e={workshop} i={1} href={`/speaking/#${eventId(workshop)}`} />}
+        {podcast && <StageCard e={podcast} i={0} href={talkFor(podcast) ? `/talks/${talkFor(podcast)!.slug}/` : `/speaking/#${eventId(podcast)}`} />}
+        {workshop && <StageCard e={workshop} i={1} href={talkFor(workshop) ? `/talks/${talkFor(workshop)!.slug}/` : `/speaking/#${eventId(workshop)}`} />}
       </div>
     </section>
   )}

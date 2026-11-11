@@ -23,7 +23,7 @@ const allKinds: { k: K; label: string }[] = [
 const kinds = allKinds.filter((x) => record.rows.some((r) => kindOf(r.kind) === x.k));
 const byMonth = [...new Set(record.rows.map((r) => r.date.slice(0, 7)))].map((m) => ({ m, rows: record.rows.filter((r) => r.date.startsWith(m)) }));
 ---
-<Base title="Timeline" description="Martin Ferret's open source contributions, talks and Lab experiments, by date, each with its source and status.">
+<Base fullTitle="Timeline of Contributions and Talks | Martin Ferret" title="Timeline" description="Martin Ferret's open source contributions, talks and Lab experiments, by date, each with its source and status." crumbs={[["Timeline", '/timeline/']]}>
   <PageHero title="Timeline" crumb={{ href: '/about/', label: 'About', after: `as of ${formatDate(buildDate)}` }} lede="Contributions, talks and experiments, by date. Every entry has a source, and every number on the site is counted from this list.">
     <a class="cta cta--soft" href="#entries">See every entry</a>
     <a class="cta cta--onblue" href="/work/">Open source work</a>

@@ -37,6 +37,8 @@ export interface Experiment {
   /** When the experiment was opened: "YYYY-MM" or "YYYY-MM-DD". Not a measurement date. */
   opened?: string;
   status: 'confirmed' | 'rejected' | 'open';
+  /** The numbers are being re-measured: shown with a neutral notice, numbers unchanged until new results land. */
+  remeasuring?: boolean;
   verdict: string;
   takeaway: string;
   reproduce: string;
@@ -84,8 +86,13 @@ export const range = (c: Condition) => {
 };
 
 /** Headline result for an experiment, computed from the raw medians, never typed by hand. */
+/** The newest session where all these conditions were measured (a later partial re-measurement may lack some). */
+const sessionWith = (e: Experiment, keys: string[]) =>
+  e.sessions.slice().sort((a, b) => b.date.localeCompare(a.date)).find((s) => keys.every((k) => s.conditions.some((c) => c.key === k && c.status === 'ok')));
+
 export function headline(e: Experiment): { value: string; label: string } | null {
-  const s = lastSession(e);
+  const s = sessionWith(e, ['before-ts7', 'after-ts7']) ?? sessionWith(e, ['src-ts6', 'src-ts7']);
+  if (!s) return null;
   const get = (k: string) => s.conditions.find((c) => c.key === k)?.median?.checkTime;
   if (e.id === '001') {
     const b = get('before-ts7');
@@ -106,7 +113,7 @@ export interface ChartGroup { label: string; bars: { label: string; value: numbe
  *  compiler-vs-compiler experiments compare per machine. Returns [] when the data has neither shape. */
 export function chartGroups(e: Experiment): { groups: ChartGroup[]; delta: 'percent' | 'times' } {
   const med = (s: Session, key: string) => s.conditions.find((c) => c.key === key)?.median?.checkTime;
-  const s = lastSession(e);
+  const s = sessionWith(e, ['before-ts7', 'after-ts7']) ?? lastSession(e);
   const versions = [...new Set(s.conditions.map((c) => c.key.match(/^(?:before|after)-ts(\d+)$/)?.[1]).filter(Boolean))] as string[];
   if (versions.length) {
     const groups = versions.map((v) => ({ label: `TypeScript ${v}`, bars: [
