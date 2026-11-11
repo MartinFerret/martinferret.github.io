@@ -1,0 +1,46 @@
+---
+// "How I work": a four-step loop, drawn as a diagram. The connector draws itself when it scrolls into view.
+const steps = [
+  { t: 'Measure', d: 'Run tsc with extended diagnostics on a real project and record check time, memory and instantiations.', icon: 'gauge' },
+  { t: 'Isolate', d: 'Shrink the slowdown to one cause in a small experiment, with a safety file proving the types stay as strict.', icon: 'scope' },
+  { t: 'Fix upstream', d: 'When the cause lives in TypeScript’s own types, open a pull request there, not a workaround.', icon: 'merge' },
+  { t: 'Publish', d: 'Ship the raw numbers and the machine they ran on, whatever the verdict.', icon: 'doc' },
+];
+const icons: Record<string, string> = {
+  gauge: '<path d="M4 15a8 8 0 1 1 16 0"/><path d="m12 15 4-5"/><circle cx="12" cy="15" r="1.5" fill="currentColor"/>',
+  scope: '<circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5M11 8v6M8 11h6"/>',
+  merge: '<circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="12" r="2"/><path d="M6 7v10M6 7c0 5 6 5 10 5"/>',
+  doc: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+};
+---
+<ol class="method-d" data-observe aria-label="How I work, in four steps">
+  {steps.map((s, i) => (
+    <li style={`--i:${i}`}>
+      <span class="m-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={icons[s.icon]} /></span>
+      <span class="m-step">Step {i + 1}</span>
+      <h3>{s.t}</h3>
+      <p>{s.d}</p>
+    </li>
+  ))}
+</ol>
+<style>
+  .method-d { list-style: none; display: grid; gap: var(--s4); position: relative; counter-reset: m; }
+  .method-d li { position: relative; display: grid; gap: 6px; align-content: start; padding-left: 64px; }
+  .m-icon { position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: var(--accent); color: var(--on-accent); z-index: 1; }
+  .m-icon svg { width: 24px; height: 24px; }
+  .m-step { font-size: var(--step--2); font-weight: 600; color: var(--accent); }
+  .method-d h3 { font-size: var(--step-2); }
+  .method-d p { color: var(--ink-2); max-width: 36ch; }
+  /* connector */
+  .method-d li:not(:last-child)::after { content: ''; position: absolute; left: 23px; top: 56px; bottom: calc(-1 * var(--s4) + 8px); width: 2px; background: repeating-linear-gradient(to bottom, var(--accent) 0 6px, transparent 6px 12px); transform-origin: top; }
+  :global(.js) .method-d li::after { transform: scaleY(0); transition: transform 0.6s var(--ease-out) calc(var(--i) * 250ms + 300ms); }
+  :global(.js) .method-d .m-icon { transform: scale(0.4); opacity: 0; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--i) * 250ms), opacity 0.3s calc(var(--i) * 250ms); }
+  :global(.js) .method-d[data-drawn] li::after { transform: none; }
+  :global(.js) .method-d[data-drawn] .m-icon { transform: none; opacity: 1; }
+  @media (min-width: 900px) {
+    .method-d { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s4); }
+    .method-d li { padding-left: 0; padding-top: 72px; }
+    .method-d li:not(:last-child)::after { left: 56px; right: calc(-1 * var(--s4) + 8px); top: 23px; bottom: auto; width: auto; height: 2px; background: repeating-linear-gradient(to right, var(--accent) 0 6px, transparent 6px 12px); transform-origin: left; }
+    :global(.js) .method-d li::after { transform: scaleX(0); }
+  }
+</style>

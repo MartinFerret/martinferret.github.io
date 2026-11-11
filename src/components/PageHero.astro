@@ -1,0 +1,18 @@
+---
+// The blue hero panel used by every inner page. Slot "fig" adds a figure on the right; the default slot adds actions.
+interface Props { title: string; lede?: string; crumb?: { href: string; label: string; after?: string }; bareFig?: boolean; }
+const { title, lede, crumb, bareFig = false } = Astro.props;
+const hasFig = Astro.slots.has('fig');
+---
+<section class="frame hero-panel" aria-labelledby="page-title">
+  <div class:list={['wrap hero hero--page', !hasFig && 'hero--solo']}>
+    <div class="hero-text">
+      {crumb && <p class="hero-crumb"><a href={crumb.href}>{crumb.label}</a>{crumb.after && <span>/ {crumb.after}</span>}</p>}
+      <h1 class="hero-title" id="page-title">{title}</h1>
+      {lede && <p class="hero-sub" set:html={lede} />}
+      <slot name="sub" />
+      {Astro.slots.has('default') && <div class="cluster hero-actions"><slot /></div>}
+    </div>
+    {hasFig && <div class:list={['hero-fig', bareFig && 'hero-fig--bare']}><slot name="fig" /></div>}
+  </div>
+</section>

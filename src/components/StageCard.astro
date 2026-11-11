@@ -1,0 +1,24 @@
+---
+// A talk, workshop or podcast as an illustrated card.
+import Tag from './Tag.astro';
+import StatusPill from './StatusPill.astro';
+import PodcastArt from './PodcastArt.astro';
+import Pizza from './Pizza.astro';
+import type { SiteEvent } from '../data/events';
+import { eventId, eventWhen, upcoming } from '../lib/record';
+interface Props { e: SiteEvent; i?: number; href?: string; heading?: boolean; }
+const { e, i = 0, href, heading = false } = Astro.props;
+const tone = e.kind === 'Podcast' ? 'coral' : 'sun';
+const kind = e.kind === 'Podcast' ? 'podcast' : e.kind === 'Workshop' ? 'workshop' : 'talk';
+const Tagname = href ? 'a' : 'article';
+const isNext = upcoming().includes(e);
+---
+<Tagname class={`stage stage--${tone}`} href={href} id={href ? undefined : eventId(e)} style={`--i:${i}`}>
+  <span class="stage-art">{e.kind === 'Podcast' ? <PodcastArt /> : <Pizza />}</span>
+  <span class="stage-body">
+    <span class="stage-tags"><Tag kind={kind}>{e.kind}</Tag><StatusPill status={isNext ? 'upcoming' : 'delivered'} /></span>
+    {heading ? <h3 class="stage-title">{e.title}</h3> : <span class="stage-title">{e.title}</span>}
+    <span class="stage-sub">{e.role && `${e.role}, `}{e.where}, {eventWhen(e)}{e.format && `, ${e.format.toLowerCase()}`}</span>
+    {e.abstract && <span class="stage-text">{e.abstract}</span>}
+  </span>
+</Tagname>

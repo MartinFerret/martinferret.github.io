@@ -1,0 +1,17 @@
+---
+import { buildDate, socialLinks, site } from '../data/site';
+import { formatDate } from '../lib/format';
+---
+<footer class="footer">
+  <div class="wrap">
+    <ul class="footer-nav" aria-label="Footer">
+      <li><a class="strong" href={`mailto:${site.contactEmail}`}>Contact</a></li>
+      <li><a class="strong" href="/speak/">Invite me to speak</a></li>
+      <li><a href="/timeline/">Timeline</a></li>
+      {socialLinks.map((l) => <li><a href={l.href} rel="me noopener" target="_blank">{l.label}</a></li>)}
+      <li><a href="/rss.xml">RSS</a></li>
+      <li><a href="/llms.txt">llms.txt</a></li>
+    </ul>
+    <p class="meta">Last updated <time datetime={buildDate.toISOString()}>{formatDate(buildDate)}</time>. Numbers and statuses are computed at build from GitHub.</p>
+  </div>
+</footer>

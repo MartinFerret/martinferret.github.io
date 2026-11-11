@@ -1,0 +1,96 @@
+/* ==========================================================================
+   Design tokens: the single source for color, type, space, radius and motion.
+   Every component reads these; no raw hex outside this file.
+
+   Color rules
+   - One accent (TypeScript blue) for actions: primary buttons, links on hover, focus, current page.
+   - Status colors are for status badges only: merged, in review, discussion, closed.
+   - Every text pair below is WCAG AA (4.5:1 or more) on paper, sheet and fill. The site is light only.
+   ========================================================================== */
+
+:root {
+  /* Surfaces */
+  --paper: #f7f9fb;        /* page */
+  --sheet: #ffffff;        /* cards, header */
+  --fill: #edf1f5;         /* quiet fills: inputs, code, hover */
+  --rule: #d5dde7;         /* borders, dividers */
+  --rule-strong: #aab6c5;  /* hover borders, input borders (3:1 non-text contrast) */
+
+  /* Text */
+  --ink: #0e1726;          /* primary text: 17:1 on paper */
+  --ink-2: #2b3546;        /* secondary text: 11.7:1 */
+  --muted: #4a576b;        /* tertiary text, meta: 6.9:1 */
+
+  /* Accent: actions only */
+  --accent: #1d5fb8;       /* 5.9:1 on paper, white text on it 6.2:1 */
+  --accent-strong: #174d96;
+  --accent-tint: #e6eefa;
+  --on-accent: #ffffff;
+
+  /* Status: badges only */
+  --st-merged: #13703a;    --st-merged-bg: #e3f4e8;
+  --st-review: #8a5200;    --st-review-bg: #fdf0d5;
+  --st-discussion: #2b3546; --st-discussion-bg: #edf1f5;
+  --st-closed: #4a576b;    --st-closed-bg: transparent;
+  --st-upcoming: #1d5fb8;  --st-upcoming-bg: #e6eefa;
+
+  --shadow-pop: 0 24px 60px -20px rgba(14, 23, 38, 0.35), 0 0 0 1px rgba(14, 23, 38, 0.06);
+  --scrim: rgba(14, 23, 38, 0.45);
+  color-scheme: light;
+}
+
+/* Color palette for figures, charts, tags and illustrations.
+   - Solid colors (blue, blue-mid, mint, coral, violet) reach 3:1 on white: safe for bars, lines and icons.
+   - "-ink" colors reach 4.5:1 on their "-soft" background and on white: safe for text.
+   - Sun is for backgrounds under ink text (12:1) and decoration only, never for text or thin lines. */
+:root {
+  --c-blue: #1d5fb8;   --c-blue-mid: #5b8fd9; --c-sky: #e6eefa;   --c-sky-strong: #c4d8f5;
+  --c-mint: #24875a;   --c-mint-ink: #14633d; --c-mint-soft: #dcf3e6;
+  --c-coral: #d9482c;  --c-coral-ink: #a3321b; --c-coral-soft: #ffe6df;
+  --c-violet: #7b5cd6; --c-violet-ink: #5a3fb5; --c-violet-soft: #efeafd;
+  --c-sun: #ffd166;    --c-amber-ink: #7a4a00; --c-sun-soft: #fff4d6;
+  --c-ink: #0e1726;
+}
+
+/* Type: Funnel Display for headings, Geist for everything else, JetBrains Mono for code and versions only. */
+:root {
+  --font-display: 'Funnel Display Variable', 'Funnel Display', 'Geist Variable', system-ui, sans-serif;
+  --font-ui: 'Geist Variable', 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --step--2: 0.875rem;   /* 14: smallest text on the site (badges, kbd) */
+  --step--1: 0.9375rem;  /* 15: meta, secondary lines */
+  --step-0: 1.0625rem;   /* 17: body */
+  --step-1: 1.25rem;     /* 20 */
+  --step-2: 1.5rem;      /* 24 */
+  --step-3: 2rem;        /* 32 */
+  --step-4: 2.5rem;      /* 40 */
+  --step-5: 3.25rem;     /* 52 */
+  --step-6: 4.25rem;     /* 68 */
+
+  --fs-hero: clamp(2.625rem, 1.2rem + 5.2vw, 5.75rem);
+  --fs-h1: clamp(2.25rem, 1.5rem + 2.6vw, 3.75rem);
+  --fs-h2: clamp(1.625rem, 1.3rem + 1.1vw, 2.25rem);
+  --fs-h3: var(--step-1);
+  --fs-metric: clamp(3rem, 2rem + 3vw, 4.5rem);
+
+  --measure: 68ch;       /* prose line length: 60 to 75 characters */
+
+  /* Space: 8px rhythm */
+  --s1: 8px; --s2: 16px; --s3: 24px; --s4: 32px; --s5: 40px; --s6: 48px; --s8: 64px; --s10: 80px; --s12: 96px; --s16: 128px;
+  --content: 1120px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --header-h: 64px;
+
+  /* Radius: controls < cards < panels */
+  --r-ctl: 8px;
+  --r-card: 14px;
+  --r-panel: 22px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast: 140ms;
+  --t-med: 240ms;
+  --t-slow: 520ms;
+}

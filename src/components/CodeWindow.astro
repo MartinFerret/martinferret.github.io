@@ -1,0 +1,38 @@
+---
+// Editor-window illustration of a fix: the call that now fails to compile, the compiler's message, and the corrected call.
+// Lines starting with "!" are the compiler's answer. Decorative: the same facts are in the card text.
+interface Props { lines: string[]; file?: string; }
+const { lines, file = 'observer.ts' } = Astro.props;
+const hl = (l: string) => l
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\b(const|new|true)\b/g, '<span class="k">$1</span>')
+  .replace(/(\w+)(?=\()/g, '<span class="f">$1</span>')
+  .replace(/\b(childList)\b/g, '<span class="p">$1</span>');
+let n = 0;
+---
+<div class="cw" aria-hidden="true">
+  <div class="cw-bar"><i></i><i></i><i></i><span>{file}</span></div>
+  <div class="cw-body">
+    {lines.map((l) => l.startsWith('!') ? (
+      <div class="cw-err"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#d9482c" /><path d="M8 4.5v4.5M8 11.2v.3" stroke="#fff" stroke-width="1.8" stroke-linecap="round" /></svg><span>{l.slice(2)}</span></div>
+    ) : (
+      <div class:list={['cw-line', /\.observe\(target\);$/.test(l) && 'bad', /childList/.test(l) && 'good']}><span class="ln">{++n}</span><code set:html={hl(l)} />{/childList/.test(l) && <svg class="ok" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#24875a" /><path d="m5 8.2 2 2 4-4.4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>}</div>
+    ))}
+  </div>
+</div>
+<style>
+  .cw { width: 100%; border-radius: 14px; background: #0f1b2e; box-shadow: 0 24px 50px -24px rgba(14, 23, 38, 0.7); overflow: hidden; font-family: var(--font-mono); font-size: 13px; line-height: 1.5; color: #dbe6f6; }
+  .cw-bar { display: flex; align-items: center; gap: 7px; padding: 10px 14px; background: #16253d; color: #9fb3d1; font-size: 12px; }
+  .cw-bar i { width: 10px; height: 10px; border-radius: 50%; background: #ff6b6b; } .cw-bar i:nth-child(2) { background: #ffd166; } .cw-bar i:nth-child(3) { background: #59d18c; }
+  .cw-bar span { margin-left: 8px; }
+  .cw-body { display: grid; gap: 6px; padding: 16px 16px 18px; }
+  .cw-line { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
+  .ln { width: 1.2em; text-align: right; color: #5d7396; flex: none; }
+  .cw-line :global(.k) { color: #c4a7ff; } .cw-line :global(.f) { color: #8ab8ff; } .cw-line :global(.p) { color: #ffd166; }
+  .bad code { text-decoration: underline wavy #ff6b6b; text-decoration-skip-ink: none; text-underline-offset: 5px; }
+  .good { color: #dbe6f6; }
+  .ok { width: 16px; height: 16px; flex: none; }
+  .cw-err { display: flex; align-items: center; gap: 8px; margin: 2px 0 6px 2.4em; padding: 8px 12px; border-radius: 8px; background: #2a1820; border: 1px solid #5c2a2a; color: #ffb4a6; font-family: var(--font-ui); font-size: 13px; width: max-content; max-width: 100%; animation: pop-err 3.6s ease-in-out infinite; }
+  .cw-err svg { width: 16px; height: 16px; flex: none; }
+  @keyframes pop-err { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+</style>

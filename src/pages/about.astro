@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Method from '../components/Method.astro';
+import Tag from '../components/Tag.astro';
+import { site, contactHref } from '../data/site';
+import { arrow } from '../lib/ui';
+---
+<Base title="About" description={site.bio}>
+  <PageHero title="About Martin" lede="TypeScript expert, focused on how fast the type checker runs and how much you can trust what it says." bareFig>
+    <a class="cta cta--soft" href={contactHref}>Invite me to speak <Fragment set:html={arrow} /></a>
+    <a class="cta cta--onblue" href={site.links.github} target="_blank" rel="noopener">GitHub profile</a>
+    <figure class="hero-photo" slot="fig">
+      <img src="/martin-ferret.webp" alt="Portrait of Martin Ferret" width="512" height="512" />
+      <figcaption><b>{site.name}</b> France, working remotely across Europe</figcaption>
+    </figure>
+  </PageHero>
+
+  <section class="wrap block" aria-label="Biography" data-reveal>
+    <div class="bio">
+      <div class="read stack bio-text">
+        <p>I work on how fast TypeScript checks types. I build small experiments that isolate one cause of slowness, measure it on TypeScript 6 and 7, and publish the result with the raw numbers, including when the hypothesis turns out to be wrong.</p>
+        <p>When the cause sits in TypeScript’s own type definitions, I try to fix it there. My first pull request to the DOM type definitions was merged in November 2026. I also spend time on open issues: reproducing reports, checking edge cases and proposing an approach before anyone writes code.</p>
+        <p>I’m Lead Content Owner for the JavaScript and TypeScript certifications at Certificates.dev, and I run {site.meetup.name}, a free online meetup in French.</p>
+      </div>
+      <ul class="facts" role="list">
+        <li><a class="kcard" href="/work/"><Tag kind="pr">Open source</Tag><span class="kcard-text">Contributor to TypeScript’s DOM types</span></a></li>
+        <li><a class="kcard" href="/lab/"><Tag kind="lab">Research</Tag><span class="kcard-text">TypeScript Performance Lab</span></a></li>
+        <li><a class="kcard" href="/speaking/#community"><Tag kind="community">Community</Tag><span class="kcard-text">{site.meetup.name}</span></a></li>
+        <li><div class="kcard"><Tag kind="article">Certifications</Tag><span class="kcard-text">Lead Content Owner, JavaScript and TypeScript, Certificates.dev</span></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="frame sky-frame" aria-labelledby="how-title" data-reveal>
+    <div class="wrap">
+      <div class="head-center"><Tag kind="lab">Method</Tag><h2 id="how-title">How I work</h2><p>The same loop for every slowdown, from the first measurement to the published result.</p></div>
+      <Method />
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="record-title" data-reveal>
+    <a class="record" href="/timeline/">
+      <span class="record-text">
+        <Tag kind="milestone">Timeline</Tag>
+        <span class="record-title" id="record-title">Every contribution, talk and experiment, by date</span>
+        <span class="kcard-text">Each entry links to its source.</span>
+      </span>
+      <span class="cta cta--primary">Open the timeline <Fragment set:html={arrow} /></span>
+    </a>
+    <p class="contact-line">Contact: <a class="link" href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>. For a talk, a workshop or a podcast, see <a class="link" href="/speak/">Invite me</a>.</p>
+  </section>
+</Base>
+<style>
+  .bio { display: grid; gap: var(--head-gap); }
+  .bio-text { font-size: var(--step-1); line-height: 1.6; }
+  .facts { list-style: none; display: grid; gap: 12px; align-content: start; }
+  .facts .kcard { gap: 10px; padding: 18px 20px; }
+  @media (min-width: 960px) { .bio { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); } }
+  .record { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s3); padding: var(--card-pad); border-radius: 24px; background: var(--c-mint-soft); transition: transform var(--t-med) var(--ease); }
+  .record:hover { transform: translateY(-3px); }
+  .record-text { display: grid; gap: 10px; justify-items: start; max-width: 52ch; }
+  .contact-line { margin-top: var(--s3); color: var(--ink-2); }
+  .record-title { font-family: var(--font-display); font-size: var(--step-3); line-height: 1.15; color: var(--ink); }
+</style>

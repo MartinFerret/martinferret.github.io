@@ -1,0 +1,165 @@
+---
+import Base from '../layouts/Base.astro';
+import WorkRow from '../components/WorkRow.astro';
+import PageHero from '../components/PageHero.astro';
+import WorkBreakdown from '../components/WorkBreakdown.astro';
+import StatusPill from '../components/StatusPill.astro';
+import { projectLabel, type Kind, type Status } from '../data/contributions';
+import { getContributions, type LiveContribution } from '../lib/github';
+import { getRecord, metricsFrom, metric } from '../lib/record';
+import { statusBadge } from '../lib/status';
+import { buildDate } from '../data/site';
+import { formatDate } from '../lib/format';
+
+const list = await getContributions();
+const metrics = metricsFrom((await getRecord()).rows);
+const msPrs = metric(metrics, 'ms-prs');
+const msMerged = metric(metrics, 'ms-merged');
+const inReview = metric(metrics, 'in-review');
+const projects = [...new Set(list.map((c) => c.project))];
+
+const isPr = (c: LiveContribution) => c.kind === 'pr';
+const groups = [
+  { id: 'merged', badge: 'merged', title: 'Merged fixes', note: 'Pull requests accepted by the maintainers.', items: list.filter((c) => isPr(c) && c.status === 'merged') },
+  { id: 'in-review', badge: 'open', title: 'In review', note: 'Pull requests waiting for a maintainer.', items: list.filter((c) => isPr(c) && c.status === 'open') },
+  { id: 'analyses', badge: 'discussion', title: 'Analyses and discussions', note: 'Root-cause analyses, reproductions and answers on issues I did not open.', items: list.filter((c) => !isPr(c)) },
+  { id: 'closed', badge: 'closed', title: 'Closed without merge', note: 'Pull requests that were closed.', items: list.filter((c) => isPr(c) && c.status === 'closed') },
+].filter((g) => g.items.length > 0);
+const counted = groups.reduce((n, g) => n + g.items.length, 0);
+if (counted !== list.length) throw new Error(`Work page: ${list.length - counted} contributions are in no group`);
+
+const kinds = (['pr', 'issue', 'answer'] as Kind[]).filter((k) => list.some((c) => c.kind === k));
+const statuses = (['merged', 'open', 'discussion', 'answered', 'closed'] as Status[]).filter((s) => list.some((c) => c.status === s));
+const plural: Record<Kind, string> = { pr: 'Pull requests', issue: 'Issue analyses', answer: 'Answers' };
+---
+<Base title="Work" description="Martin Ferret's open source work: pull requests to Microsoft's TypeScript repositories, issue analyses and answers, each with its source and live GitHub status.">
+  <PageHero title="Open source work">
+    <p class="hero-sub summary" slot="sub">
+      <strong><span data-metric="ms-prs">{msPrs.value}</span> pull requests at Microsoft, <span data-metric="ms-merged">{msMerged.value}</span> merged</strong>, <span data-metric="in-review">{inReview.value}</span> in review.{' '}
+      {list.length} contributions across {projects.length} projects, statuses read from GitHub on {formatDate(buildDate)}.
+    </p>
+    <a class="cta cta--soft" href="#contributions">Browse the list</a>
+    <a class="cta cta--onblue" href="/timeline/">Timeline</a>
+    <WorkBreakdown list={list} slot="fig" />
+  </PageHero>
+
+  <div class="wrap block" id="contributions">
+    <div data-work>
+      <form class="toolbar" role="search" aria-label="Filter contributions" onsubmit="return false">
+        <div class="tb-search">
+          <label class="visually-hidden" for="work-q">Filter by text, repository or number</label>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+          <input id="work-q" name="q" type="search" placeholder="Filter: title, repository, #2582" autocomplete="off" />
+        </div>
+        <fieldset class="seg">
+          <legend class="visually-hidden">Kind</legend>
+          <label><input type="radio" name="kind" value="all" checked /><span>All kinds</span></label>
+          {kinds.map((k) => <label><input type="radio" name="kind" value={k} /><span>{plural[k]}</span></label>)}
+        </fieldset>
+        <fieldset class="seg">
+          <legend class="visually-hidden">Status</legend>
+          <label><input type="radio" name="status" value="all" checked /><span>Any status</span></label>
+          {statuses.map((s) => <label><input type="radio" name="status" value={s} /><span><i class={`sdot sdot--${statusBadge(s).variant}`} aria-hidden="true"></i>{statusBadge(s).label}</span></label>)}
+        </fieldset>
+        <div class="tb-select">
+          <label class="visually-hidden" for="work-project">Project</label>
+          <select id="work-project" name="project">
+            <option value="all">All projects</option>
+            {projects.map((p) => <option value={p}>{projectLabel(p)}</option>)}
+          </select>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+        </div>
+        <p class="tb-count" aria-live="polite"><span data-filter-count>Showing all {list.length}</span> <button class="tb-reset" type="button" data-filter-reset hidden>Clear filters</button></p>
+      </form>
+
+      {groups.map((g) => (
+        <section class="w-group" aria-labelledby={`g-${g.id}`} data-group={g.id}>
+          <div class="w-head">
+            <StatusPill status={g.badge as any} />
+            <h2 id={`g-${g.id}`}>{g.title} <span class="w-count" data-group-count>{g.items.length}</span></h2>
+            <p class="meta">{g.note}</p>
+          </div>
+          <ul class="w-list">{g.items.map((c) => <WorkRow c={c} />)}</ul>
+        </section>
+      ))}
+      <p class="w-empty" data-filter-empty hidden>Nothing matches these filters. <button class="tb-reset" type="button" data-filter-reset>Clear filters</button></p>
+    </div>
+  </div>
+</Base>
+
+<style is:global>
+  /* Global because the rows are rendered by WorkRow.astro; every selector is prefixed. */
+  .hero-sub.summary strong { color: #fff; }
+
+  .toolbar { position: sticky; top: var(--header-h); z-index: 5; display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; padding: 12px 0; margin-bottom: var(--head-gap); background: var(--paper); border-bottom: 1px solid var(--rule); }
+  .tb-search { position: relative; flex: 1 1 260px; }
+  .tb-search svg, .tb-select svg { position: absolute; top: 50%; translate: 0 -50%; width: 18px; height: 18px; color: var(--muted); pointer-events: none; }
+  .tb-search svg { left: 12px; }
+  .tb-search input, .tb-select select {
+    width: 100%; min-height: 44px; border: 1px solid var(--rule-strong); border-radius: var(--r-ctl); background: var(--sheet); color: var(--ink);
+    font: inherit; font-size: var(--step-0); transition: border-color var(--t-fast);
+  }
+  .tb-search input { padding: 0 12px 0 40px; }
+  .tb-search input::placeholder { color: var(--muted); }
+  .tb-search input:hover, .tb-select select:hover { border-color: var(--ink-2); }
+  .tb-select { position: relative; }
+  .tb-select select { appearance: none; padding: 0 40px 0 12px; font-size: var(--step--1); font-weight: 500; cursor: pointer; }
+  .tb-select svg { right: 12px; }
+
+  [data-work] .seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; margin: 0; border: 1px solid var(--rule); border-radius: 10px; background: var(--fill); }
+  [data-work] .seg label { position: relative; }
+  [data-work] .seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  [data-work] .seg span { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 12px; border-radius: 7px; font-size: var(--step--1); font-weight: 500; color: var(--ink-2); white-space: nowrap; transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
+  [data-work] .seg label:hover span { color: var(--ink); }
+  [data-work] .seg input:checked + span { background: var(--sheet); color: var(--ink); box-shadow: 0 1px 2px rgba(14, 23, 38, 0.12), 0 0 0 1px var(--rule); }
+  [data-work] .seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .sdot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .sdot--merged { color: var(--st-merged); } .sdot--review { color: var(--st-review); } .sdot--discussion { box-shadow: inset 0 0 0 1.5px var(--st-discussion); background: transparent; } .sdot--closed { height: 2px; color: var(--st-closed); }
+
+  .tb-count { margin-left: auto; font-size: var(--step--1); color: var(--ink-2); display: flex; gap: 12px; align-items: center; }
+  .tb-reset { min-height: 36px; padding: 0 10px; border: 0; background: none; color: var(--accent); font: inherit; font-weight: 500; text-decoration: underline; text-underline-offset: 0.2em; cursor: pointer; border-radius: 6px; }
+  .tb-reset[hidden] { display: none; }
+
+  .w-group { margin-bottom: var(--grid-gap); padding: var(--card-pad); border-radius: 24px; background: var(--sheet); border: 1px solid var(--rule); }
+  .w-group + .w-group { margin-top: 0; }
+  .w-group[hidden] { display: none; }
+  .w-head { display: grid; justify-items: start; gap: 8px; margin-bottom: var(--s3); }
+  .w-head h2 { font-size: var(--fs-h2); }
+  .w-count { display: inline-block; margin-left: 6px; font-family: var(--font-ui); font-size: var(--step-0); font-weight: 600; color: var(--muted); vertical-align: middle; }
+  .w-list { list-style: none; border-top: 1px solid var(--rule); }
+  .w-row:last-child { border-bottom: 0; }
+
+  .w-row { border-bottom: 1px solid var(--rule); animation: row-in var(--t-med) var(--ease-out); }
+  .w-row[data-out] { display: none; }
+  .w-row[data-target] summary { background: var(--accent-tint); }
+  @keyframes row-in { from { opacity: 0; transform: translateY(4px); } }
+  .w-row summary {
+    display: grid; grid-template-columns: auto minmax(0, 1fr) 20px; grid-template-areas: 'main main chev' 'badge date chev';
+    gap: 6px var(--s2); align-items: center; padding: 16px 8px; margin-inline: -8px; border-radius: var(--r-ctl);
+    cursor: pointer; list-style: none; transition: background-color var(--t-med);
+  }
+  .w-row summary::-webkit-details-marker { display: none; }
+  .w-row summary:hover { background: var(--fill); }
+  .w-row summary:hover .w-title { color: var(--accent); }
+  .w-main { grid-area: main; display: grid; gap: 3px; min-width: 0; }
+  .w-title { font-weight: 600; font-size: var(--step-0); line-height: 1.4; color: var(--ink); transition: color var(--t-fast); }
+  .w-ref { font-size: var(--step--1); color: var(--muted); }
+  .w-date { grid-area: date; font-size: var(--step--1); color: var(--muted); white-space: nowrap; }
+  .w-badge { grid-area: badge; justify-self: start; }
+  .w-chev { grid-area: chev; width: 20px; height: 20px; color: var(--muted); transition: transform var(--t-med) var(--ease); }
+  details[open] .w-chev { transform: rotate(180deg); }
+  .w-detail { display: grid; gap: 12px; padding: 4px 0 var(--s3); max-width: var(--measure); }
+  details[open] .w-detail { animation: row-in var(--t-med) var(--ease-out); }
+  .w-summary { color: var(--ink-2); }
+  .w-orig { color: var(--ink-2); }
+  @media (min-width: 760px) {
+    .w-row summary { grid-template-columns: minmax(0, 1fr) 120px 128px 20px; grid-template-areas: 'main date badge chev'; }
+    .w-date { text-align: right; }
+    .w-badge { justify-self: start; }
+    .w-detail { padding-left: 0; }
+  }
+  @media (max-width: 759px) { .w-kind { display: none; } .tb-count { margin-left: 0; } .toolbar { position: static; } }
+
+  .w-empty { padding: var(--s5); text-align: center; border: 1px dashed var(--rule-strong); border-radius: var(--r-card); color: var(--ink-2); }
+  .w-empty[hidden] { display: none; }
+</style>

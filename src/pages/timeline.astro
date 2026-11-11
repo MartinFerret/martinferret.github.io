@@ -1,0 +1,116 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import RisingChart from '../components/RisingChart.astro';
+import ActivityStrip from '../components/ActivityStrip.astro';
+import StatusPill from '../components/StatusPill.astro';
+import Tag from '../components/Tag.astro';
+import { getRecord, metricsFrom, monthsFrom } from '../lib/record';
+import { buildDate } from '../data/site';
+import { formatDate, formatMonthYear } from '../lib/format';
+import type { AnyStatus } from '../lib/status';
+
+const record = await getRecord();
+const metrics = metricsFrom(record.rows).filter((m) => m.key !== 'ms-prs');
+const months = monthsFrom(record.rows);
+const tones = ['mint', 'blue', 'sun', 'blue', 'mint'];
+type K = 'pr' | 'issue' | 'answer' | 'lab' | 'talk';
+const kindOf = (k: string): K => (k === 'pr' || k === 'issue' || k === 'answer' || k === 'lab' ? k : 'talk');
+const allKinds: { k: K; label: string }[] = [
+  { k: 'pr', label: 'Pull requests' }, { k: 'issue', label: 'Issue analyses' }, { k: 'answer', label: 'Answers' },
+  { k: 'talk', label: 'Talks' }, { k: 'lab', label: 'Lab' },
+];
+const kinds = allKinds.filter((x) => record.rows.some((r) => kindOf(r.kind) === x.k));
+const byMonth = [...new Set(record.rows.map((r) => r.date.slice(0, 7)))].map((m) => ({ m, rows: record.rows.filter((r) => r.date.startsWith(m)) }));
+---
+<Base title="Timeline" description="Martin Ferret's open source contributions, talks and Lab experiments, by date, each with its source and status.">
+  <PageHero title="Timeline" crumb={{ href: '/about/', label: 'About', after: `as of ${formatDate(buildDate)}` }} lede="Contributions, talks and experiments, by date. Every entry has a source, and every number on the site is counted from this list.">
+    <a class="cta cta--soft" href="#entries">See every entry</a>
+    <a class="cta cta--onblue" href="/work/">Open source work</a>
+  </PageHero>
+
+  <section class="wrap block" aria-label="Key numbers" data-reveal>
+    <ul class="tr-kpis" role="list">
+      {metrics.map((m, i) => (
+        <li style={`--i:${i}`}>
+          <a class={`kpi kpi--${tones[i % tones.length]}`} href={m.href}>
+            <span class="kpi-text"><span class="kpi-value" data-metric={m.key} data-count={m.value}>{m.value}</span><span class="kpi-label">{m.label}</span></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <div class="tr-charts">
+      <div class="chart-card"><h2 class="chart-title">Cumulative, since the first entry</h2><RisingChart rows={record.rows} /></div>
+      <div class="chart-card"><h2 class="chart-title">Per month, last 12 months</h2><ActivityStrip months={months} /></div>
+    </div>
+  </section>
+
+  <section class="wrap block" id="entries" aria-labelledby="entries-title" data-tl>
+    <div class="head-row">
+      <div><h2 id="entries-title">Every entry</h2><p><span data-metric="ledger-rows">{record.rows.length}</span> entries, newest first.</p></div>
+      <p class="tl-count" aria-live="polite" data-tl-count>Showing all {record.rows.length}</p>
+    </div>
+    <fieldset class="seg tl-filter">
+      <legend class="visually-hidden">Show</legend>
+      <label><input type="radio" name="tlkind" value="all" checked /><span>Everything</span></label>
+      {kinds.map((x) => <label><input type="radio" name="tlkind" value={x.k} /><span>{x.label}</span></label>)}
+    </fieldset>
+    <ol class="tl" role="list">
+      {byMonth.map(({ m, rows }) => (
+        <li class="tl-month" data-tl-month>
+          <h3 class="tl-mlabel">{formatMonthYear(`${m}-01`)}</h3>
+          <ul class="tl-items" role="list">
+            {rows.map((r) => (
+              <li class="tl-item" data-row-kind={r.kind} data-row-status={r.status} data-tl-kind={kindOf(r.kind)}>
+                <time class="tl-date" datetime={r.date}>{formatDate(r.date)}</time>
+                <div class="tl-main">
+                  <span class="tl-tags"><Tag kind={kindOf(r.kind) === 'talk' ? 'talk' : kindOf(r.kind)}>{r.ref}</Tag><StatusPill status={r.status as AnyStatus} /></span>
+                  {r.url ? <a class="tl-title" href={r.url} target={r.url.startsWith('http') ? '_blank' : undefined} rel="noopener">{r.headline}</a> : <span class="tl-title">{r.headline}</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  </section>
+</Base>
+<style>
+  .tr-kpis { list-style: none; display: grid; gap: var(--grid-gap); margin-bottom: var(--grid-gap); }
+  .tr-kpis > li { display: flex; }
+  .tr-kpis .kpi-value { font-size: var(--step-5); }
+  @media (min-width: 640px) { .tr-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .tr-kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); } .tr-kpis .kpi { padding: 20px; } }
+  .tr-charts { display: grid; gap: var(--grid-gap); }
+  @media (min-width: 1000px) { .tr-charts { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); } }
+
+  .tl-count { font-size: var(--step--1); color: var(--ink-2); }
+  .tl-filter { margin-bottom: var(--head-gap); display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border: 1px solid var(--rule); border-radius: 10px; background: var(--fill); }
+  .tl-filter label { position: relative; }
+  .tl-filter input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .tl-filter span { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 7px; font-size: var(--step--1); font-weight: 500; color: var(--ink-2); transition: background-color var(--t-fast), color var(--t-fast); }
+  .tl-filter input:checked + span { background: var(--sheet); color: var(--ink); box-shadow: 0 1px 2px rgba(14, 23, 38, 0.12), 0 0 0 1px var(--rule); }
+  .tl-filter input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .tl { list-style: none; display: grid; gap: var(--grid-gap); }
+  .tl-month { display: grid; gap: var(--s2); }
+  .tl-month[hidden] { display: none; }
+  .tl-mlabel { font-size: var(--step-1); }
+  .tl-items { list-style: none; position: relative; display: grid; gap: 10px; padding-left: 28px; }
+  .tl-items::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; border-radius: 2px; background: var(--c-sky-strong); }
+  .tl-item { position: relative; display: grid; gap: 6px 20px; padding: 16px 20px; border-radius: 18px; background: var(--sheet); border: 1px solid var(--rule); animation: row-in var(--t-med) var(--ease-out); }
+  .tl-item::before { content: ''; position: absolute; left: -27px; top: 22px; width: 12px; height: 12px; border-radius: 50%; background: var(--c-blue); box-shadow: 0 0 0 4px var(--paper); }
+  .tl-item[data-tl-kind='lab']::before { background: var(--c-violet); }
+  .tl-item[data-tl-kind='talk']::before { background: var(--c-coral); }
+  .tl-item[data-tl-kind='issue']::before { background: var(--c-violet); }
+  .tl-item[data-tl-kind='answer']::before { background: #a86400; }
+  .tl-item[hidden] { display: none; }
+  .tl-date { font-size: var(--step--1); color: var(--muted); white-space: nowrap; }
+  .tl-main { display: grid; gap: 8px; min-width: 0; }
+  .tl-tags { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .tl-title { font-weight: 600; color: var(--ink); line-height: 1.4; }
+  a.tl-title { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.2em; transition: color var(--t-fast), text-decoration-color var(--t-fast); }
+  a.tl-title:hover { color: var(--accent); text-decoration-color: currentColor; }
+  @media (min-width: 760px) { .tl-item { grid-template-columns: 110px minmax(0, 1fr); align-items: start; } .tl-date { padding-top: 4px; } }
+  @keyframes row-in { from { opacity: 0; transform: translateY(4px); } }
+</style>

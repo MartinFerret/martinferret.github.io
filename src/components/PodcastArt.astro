@@ -1,0 +1,46 @@
+---
+// Podcast illustration: a studio microphone, headphones and an "On air" light. Decorative.
+---
+<svg class="art" viewBox="0 0 320 240" aria-hidden="true">
+  <ellipse cx="160" cy="214" rx="120" ry="10" fill="#0e1726" opacity="0.08" />
+  <!-- on air sign -->
+  <g class="onair">
+    <rect x="206" y="22" width="92" height="34" rx="10" fill="#fff" stroke="#0e1726" stroke-width="3" />
+    <circle class="onair-dot" cx="224" cy="39" r="6" fill="#d9482c" />
+    <text x="236" y="45" font-family="Geist Variable, sans-serif" font-weight="700" font-size="15" fill="#0e1726">ON AIR</text>
+  </g>
+  <!-- sound waves -->
+  <g class="waves" fill="none" stroke-linecap="round" stroke-width="4">
+    <path d="M104 78a52 52 0 0 0 0 64" stroke="#5b8fd9" /><path d="M88 66a72 72 0 0 0 0 88" stroke="#5b8fd9" opacity=".55" />
+    <path d="M216 78a52 52 0 0 1 0 64" stroke="#5b8fd9" /><path d="M232 66a72 72 0 0 1 0 88" stroke="#5b8fd9" opacity=".55" />
+  </g>
+  <!-- stand -->
+  <path d="M160 168v34" stroke="#0e1726" stroke-width="6" stroke-linecap="round" />
+  <rect x="118" y="198" width="84" height="12" rx="6" fill="#0e1726" />
+  <!-- yoke -->
+  <path d="M126 112v20a34 34 0 0 0 68 0v-20" fill="none" stroke="#0e1726" stroke-width="6" stroke-linecap="round" />
+  <!-- mic body -->
+  <rect x="134" y="52" width="52" height="104" rx="26" fill="#1d5fb8" stroke="#0e1726" stroke-width="3" />
+  <rect x="134" y="52" width="52" height="60" rx="26" fill="#c4d8f5" stroke="#0e1726" stroke-width="3" />
+  <g stroke="#5b8fd9" stroke-width="2" stroke-linecap="round"><path d="M146 70h28M142 82h36M142 94h36M146 106h28" /></g>
+  <rect x="134" y="110" width="52" height="8" fill="#0e1726" />
+  <path d="M146 126v18" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".5" />
+  <!-- headphones -->
+  <g class="phones">
+    <path d="M30 170a34 34 0 0 1 68 0" fill="none" stroke="#0e1726" stroke-width="6" stroke-linecap="round" />
+    <rect x="22" y="160" width="20" height="34" rx="8" fill="#d9482c" stroke="#0e1726" stroke-width="3" />
+    <rect x="86" y="160" width="20" height="34" rx="8" fill="#d9482c" stroke="#0e1726" stroke-width="3" />
+  </g>
+  <!-- sparkle -->
+  <path class="spark" d="M262 120l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#ffd166" stroke="#0e1726" stroke-width="2" stroke-linejoin="round" />
+</svg>
+<style>
+  .art { width: 100%; height: auto; display: block; overflow: visible; }
+  .waves path { animation: wave 2.2s ease-in-out infinite; }
+  .waves path:nth-child(2n) { animation-delay: -1.1s; }
+  .onair-dot { animation: blink 1.6s ease-in-out infinite; }
+  .spark { transform-box: fill-box; transform-origin: center; animation: twinkle 3s ease-in-out infinite; }
+  @keyframes wave { 50% { opacity: 0.2; } }
+  @keyframes blink { 50% { opacity: 0.35; } }
+  @keyframes twinkle { 50% { transform: scale(0.7) rotate(20deg); } }
+</style>

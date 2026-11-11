@@ -1,0 +1,34 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import { render } from 'astro:content';
+import { getPosts } from '../../lib/writing';
+import { formatDate } from '../../lib/format';
+import Versions from '../../components/Versions.astro';
+export async function getStaticPaths() {
+  return (await getPosts()).map((p) => ({ params: { id: p.id }, props: { p } }));
+}
+const { p } = Astro.props;
+const { Content } = await render(p);
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/`([^`]+)`/g, '<code>$1</code>');
+---
+<Base title={p.data.title} description={p.data.description.replace(/`/g, '')} type="article">
+  <PageHero title={p.data.title} lede={esc(p.data.description)} crumb={{ href: '/writing/', label: 'Writing', after: `${formatDate(p.data.date)}${p.data.draft ? ', draft' : ''}` }} />
+  <article class="wrap block">
+    <div class="art">
+      <div class="prose"><Content /></div>
+      <aside class="art-side">
+        <div class="kcard">
+          <p class="meta">Published <time datetime={p.data.date.toISOString()}>{formatDate(p.data.date)}</time>{p.data.updated && <>, updated {formatDate(p.data.updated)}</>}</p>
+          {p.data.verifiedOn.length > 0 && <p class="meta">Verified on <Versions list={p.data.verifiedOn} /></p>}
+          {p.data.sources.length > 0 && <ul class="src" role="list">{p.data.sources.map((s) => <li><a class="link" href={s.url} target="_blank" rel="noopener">{s.label}</a></li>)}</ul>}
+        </div>
+      </aside>
+    </div>
+  </article>
+</Base>
+<style>
+  .art { display: grid; gap: var(--head-gap); }
+  .src { list-style: none; display: grid; gap: 6px; font-size: var(--step--1); }
+  @media (min-width: 1000px) { .art { grid-template-columns: minmax(0, 1fr) 280px; } .art-side { position: sticky; top: calc(var(--header-h) + 24px); align-self: start; } }
+</style>

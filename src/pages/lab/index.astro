@@ -1,0 +1,97 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import LabRow from '../../components/LabRow.astro';
+import Tag from '../../components/Tag.astro';
+import StatusPill from '../../components/StatusPill.astro';
+import { experiments, headline, lastSession, machine, labGeneratedAt } from '../../lib/lab';
+import { site } from '../../data/site';
+import { formatDate } from '../../lib/format';
+const sorted = experiments.slice().sort((a, b) => a.id.localeCompare(b.id));
+const icons: Record<string, string> = {
+  pin: '<path d="M12 3l5 5-3 1-3 5-2-2-4 4M14 4l6 6"/>',
+  ruler: '<rect x="3" y="8" width="18" height="8" rx="2"/><path d="M7 8v3M11 8v4M15 8v3M19 8v4"/>',
+  one: '<circle cx="12" cy="12" r="8"/><path d="M11 9l2-1v8"/>',
+  shield: '<path d="M12 3l7 3v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="m9 12 2 2 4-4.5"/>',
+  doc: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+  scale: '<path d="M12 4v16M5 20h14M5 8h14M7 8l-3 6h6zM17 8l-3 6h6z"/>',
+};
+const method = [
+  { t: 'Pin everything', d: 'Compiler versions, external commits and machine context are recorded with every result.', i: 'pin', tone: 'blue' },
+  { t: 'Measure the same way', d: 'Three runs of tsc with extended diagnostics per condition, median reported with the range.', i: 'ruler', tone: 'violet' },
+  { t: 'Change one thing', d: 'A fix changes a single thing and keeps the same type safety.', i: 'one', tone: 'coral' },
+  { t: 'Prove type safety', d: 'A safety file lists usages that must still fail to compile. The run stops if one passes.', i: 'shield', tone: 'mint' },
+  { t: 'Publish any verdict', d: 'Confirmed, rejected or open. Negative results are published too.', i: 'doc', tone: 'amber' },
+  { t: 'Know the limits', d: 'Compare conditions on the same machine only. Counters may differ across compilers.', i: 'scale', tone: 'neutral' },
+];
+---
+<Base title="Lab" description="TypeScript Performance Lab: measured, reproducible experiments on how fast TypeScript checks your types.">
+  <PageHero title="TypeScript Performance Lab" lede="Each experiment ships its code, the exact command that produced the numbers, and the raw results with the machine they ran on.">
+    <a class="cta cta--soft" href="#experiments">See the experiments</a>
+    <a class="cta cta--onblue" href="#method">How it’s measured</a>
+    <div slot="fig" class="lab-fig">
+      <p class="lab-fig-cap"><b>{experiments.length} experiments</b><span>Data generated {formatDate(labGeneratedAt)}</span></p>
+      <ul role="list">
+        {sorted.map((e) => {
+          const h = headline(e);
+          return (
+            <li>
+              <a href={`/lab/${e.folder}/`}>
+                <span class="lf-top"><Tag kind="lab">Lab #{e.id}</Tag><StatusPill status={e.status === 'open' ? 'open-question' : e.status} /></span>
+                {h && <span class="lf-num">{h.value}</span>}
+                <span class="lf-label">{h ? h.label : e.title}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </PageHero>
+
+  <section class="wrap block" id="experiments" aria-label="Experiments">
+    {sorted.map((e, i) => (
+      <div class="exp">
+        <LabRow e={e} reverse={i % 2 === 1} heading="h2" />
+        <p class="exp-machine">Latest run: {machine(lastSession(e))}, {formatDate(lastSession(e).date)}. {e.sessions.length} {e.sessions.length === 1 ? 'machine' : 'machines'} in total.</p>
+      </div>
+    ))}
+  </section>
+
+  <section class="frame sky-frame" id="method" aria-labelledby="method-title" data-reveal>
+    <div class="wrap">
+      <div class="head-center">
+        <Tag kind="lab">Method</Tag>
+        <h2 id="method-title">Same protocol, every experiment</h2>
+        <p>Six rules that make a number worth publishing.{site.labRepo && <> The <a class="link" href={site.labRepo}>lab repository</a> has the scripts.</>}</p>
+      </div>
+      <ol class="g3 rules" role="list">
+        {method.map((m, i) => (
+          <li style={`--i:${i}`}>
+            <div class="kcard rule">
+              <span class={`tag tag--${m.tone}`}><span class="tag-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={icons[m.i]} /></span><span class="tag-tx">Rule {i + 1}</span></span>
+              <h3 class="kcard-title">{m.t}</h3>
+              <p class="kcard-text">{m.d}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</Base>
+<style>
+  .lab-fig { display: grid; gap: var(--s2); }
+  .lab-fig-cap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+  .lab-fig-cap b { font-family: var(--font-display); font-weight: 500; font-size: var(--step-2); }
+  .lab-fig-cap span { font-size: var(--step--1); color: var(--muted); }
+  .lab-fig ul { list-style: none; display: grid; gap: 12px; }
+  .lab-fig a { display: grid; gap: 6px; padding: 16px 18px; border-radius: 16px; background: var(--c-sky); transition: transform var(--t-med) var(--ease), background-color var(--t-fast); }
+  .lab-fig a:hover { transform: translateX(4px); background: var(--c-sky-strong); }
+  .lf-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .lf-num { font-family: var(--font-display); font-size: var(--step-5); line-height: 1; letter-spacing: -0.045em; color: var(--c-blue); }
+  .lf-label { font-size: var(--step--1); color: var(--ink-2); }
+  .exp + .exp { margin-top: var(--sec-y); }
+  .exp :global(.zig + .zig) { margin-top: 0; }
+  .exp-machine { margin-top: var(--s3); font-size: var(--step--1); color: var(--muted); }
+  .rule { height: 100%; }
+  .rule .kcard-title { font-size: var(--step-1); }
+</style>

@@ -1,0 +1,18 @@
+---
+// A ring showing part of a whole (e.g. merged out of opened). Animates when visible.
+interface Props { value: number; total: number; color?: string; track?: string; label: string; }
+const { value, total, color = 'var(--c-mint)', track = 'rgba(14, 23, 38, 0.08)', label } = Astro.props;
+const r = 34; const c = 2 * Math.PI * r;
+const frac = total ? value / total : 0;
+---
+<svg class="donut" viewBox="0 0 88 88" role="img" aria-label={label} data-observe>
+  <circle cx="44" cy="44" r={r} fill="none" stroke={track} stroke-width="12" />
+  <circle class="donut-arc" cx="44" cy="44" r={r} fill="none" stroke={color} stroke-width="12" stroke-linecap="round" stroke-dasharray={`${c * frac} ${c}`} transform="rotate(-90 44 44)" style={`--c:${c};--len:${c * frac}`} />
+  <text x="44" y="50" text-anchor="middle">{value}/{total}</text>
+</svg>
+<style>
+  .donut { width: 88px; height: 88px; flex: none; }
+  .donut text { font-family: var(--font-display); font-size: 17px; fill: var(--ink); }
+  :global(.js) .donut .donut-arc { stroke-dasharray: 0 var(--c); transition: stroke-dasharray 1.2s var(--ease-out) 0.3s; }
+  :global(.js) .donut[data-drawn] .donut-arc { stroke-dasharray: var(--len) var(--c); }
+</style>

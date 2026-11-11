@@ -1,0 +1,29 @@
+---
+import type { MonthCell } from '../lib/record';
+import { formatMonth, formatMonthYear } from '../lib/format';
+interface Props { months: MonthCell[]; }
+const { months } = Astro.props;
+const max = Math.max(1, ...months.map((m) => m.count));
+const total = months.reduce((n, m) => n + m.count, 0);
+const active = months.filter((m) => m.count > 0).length;
+---
+<figure style="margin:0">
+  <div class="strip" role="list" aria-label={`Contributions per month over the last 12 months: ${total} in total, ${active} active months`} data-observe>
+    {months.map((m) => (
+      <div class="strip-cell" role="listitem" data-month={m.key} data-count-month={m.count} data-current={m.current} title={m.items.join('\n') || 'No activity'}>
+        <span class="strip-count" aria-hidden="true">{m.count || '·'}</span>
+        <div class="strip-bar" aria-hidden="true">
+          {m.count > 0 && <div class="strip-fill" data-draw style={`height:${Math.max(12, (m.count / max) * 100)}%`}></div>}
+        </div>
+        <span class="strip-month"><span aria-hidden="true">{formatMonth(m.date).slice(0, 1)}<span class="m-rest">{formatMonth(m.date).slice(1)}</span></span><span class="visually-hidden">{formatMonthYear(m.date)}: {m.count} {m.count === 1 ? 'item' : 'items'}{m.current ? ' (current month)' : ''}</span></span>
+      </div>
+    ))}
+  </div>
+  <figcaption class="strip-legend meta">
+    <span><b data-metric="activity-total">{total}</b> dated items in 12 months: pull requests, issue analyses, answers, talks and Lab experiments</span>
+    <span>Highlighted: current month</span>
+  </figcaption>
+</figure>
+<style>
+  @media (max-width: 559px) { .m-rest { display: none; } }
+</style>

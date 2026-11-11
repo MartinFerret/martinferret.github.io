@@ -1,0 +1,60 @@
+---
+// Vertical grouped bar chart from Lab medians, with the change between the two bars of each group.
+import { seconds } from '../lib/format';
+interface Bar { label: string; value: number; tone: 'before' | 'after'; }
+interface Group { label: string; bars: Bar[]; }
+interface Props { groups: Group[]; label: string; delta?: 'percent' | 'times'; }
+const { groups, label, delta = 'percent' } = Astro.props;
+const max = Math.max(...groups.flatMap((g) => g.bars.map((b) => b.value)));
+const change = (g: Group) => {
+  const [a, b] = g.bars.map((x) => x.value);
+  return delta === 'times' ? `${(a / b).toFixed(1)}× faster` : `−${Math.round((1 - b / a) * 100)}%`;
+};
+---
+<figure class="bc" data-observe>
+  <div class="bc-plot" role="img" aria-label={`${label}. ${groups.map((g) => `${g.label}: ${g.bars.map((b) => `${b.label} ${seconds(b.value)}`).join(', ')}, ${change(g)}`).join('. ')}.`}>
+    {groups.map((g, gi) => (
+      <div class="bc-group" style={`--g:${gi}`}>
+        <span class="bc-delta"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>{change(g)}</span>
+        <div class="bc-bars">
+          {g.bars.map((b, bi) => (
+            <div class={`bc-bar bc-bar--${b.tone}`} style={`--h:${Math.max(2, (b.value / max) * 100)}%;--i:${gi * 2 + bi}`}>
+              <span class="bc-val">{seconds(b.value)}</span>
+              <span class="bc-fill"></span>
+            </div>
+          ))}
+        </div>
+        <span class="bc-glabel">{g.label}</span>
+      </div>
+    ))}
+  </div>
+  <figcaption class="bc-legend">
+    {[...new Map(groups.flatMap((g) => g.bars).map((b) => [b.tone, b.label])).entries()].map(([tone, l]) => <span><i class={`bc-key bc-key--${tone}`}></i>{l}</span>)}
+    <span class="bc-note">Median check time, lower is faster</span>
+  </figcaption>
+</figure>
+<style>
+  .bc { margin: 0; display: grid; gap: 16px; }
+  .bc-plot { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--s3); height: 290px; padding-top: 92px; border-bottom: 2px solid var(--c-ink); background: repeating-linear-gradient(to top, transparent 0 48px, #e3e9f0 48px 49px); background-clip: content-box; }
+  .bc-group { position: relative; display: grid; }
+  .bc-bars { display: flex; align-items: flex-end; justify-content: center; gap: 12px; height: 100%; }
+  .bc-bar { position: relative; width: min(64px, 42%); height: var(--h); display: flex; flex-direction: column; justify-content: flex-end; }
+  .bc-fill { flex: 1; border-radius: 12px 12px 3px 3px; transform-origin: bottom; }
+  .bc-bar--before .bc-fill { background: linear-gradient(to top, #4f84d1, #8db3ea); }
+  .bc-bar--after .bc-fill { background: linear-gradient(to top, #174d96, #2f74d0); box-shadow: 0 10px 24px -10px rgba(29, 95, 184, 0.8); }
+  .bc-val { position: absolute; bottom: calc(100% + 8px); left: 50%; translate: -50% 0; white-space: nowrap; padding: 3px 7px; border-radius: 6px; background: var(--sheet); box-shadow: 0 0 0 1px var(--rule); font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; color: var(--ink); }
+  .bc-delta { position: absolute; top: -88px; left: 50%; translate: -50% 0; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; padding: 5px 11px 5px 8px; border-radius: 999px; background: var(--st-merged-bg); color: var(--st-merged); font-weight: 700; font-size: var(--step--1); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--st-merged) 25%, transparent); }
+  .bc-delta svg { width: 15px; height: 15px; }
+  .bc-glabel { position: absolute; top: calc(100% + 12px); left: 0; right: 0; text-align: center; font-size: var(--step--1); font-weight: 600; color: var(--ink-2); }
+  .bc-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 40px; font-size: var(--step--1); color: var(--ink-2); }
+  .bc-legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .bc-key { width: 14px; height: 14px; border-radius: 4px; }
+  .bc-key--before { background: #5b8fd9; } .bc-key--after { background: var(--c-blue); }
+  .bc-note { color: var(--muted); }
+  :global(.js) .bc .bc-fill { transform: scaleY(0); transition: transform 0.9s cubic-bezier(0.34, 1.25, 0.64, 1) calc(var(--i) * 120ms); }
+  :global(.js) .bc .bc-val { opacity: 0; transition: opacity 0.4s calc(var(--i) * 120ms + 600ms); }
+  :global(.js) .bc .bc-delta { opacity: 0; transform: translateY(6px) scale(0.9); transition: opacity 0.4s, transform 0.5s cubic-bezier(0.34, 1.5, 0.64, 1); transition-delay: calc(var(--g) * 240ms + 900ms); }
+  :global(.js) .bc[data-drawn] .bc-fill { transform: none; }
+  :global(.js) .bc[data-drawn] .bc-val { opacity: 1; }
+  :global(.js) .bc[data-drawn] .bc-delta { opacity: 1; transform: none; }
+</style>

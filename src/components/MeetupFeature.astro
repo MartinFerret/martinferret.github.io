@@ -1,0 +1,31 @@
+---
+// The community meetup, centered on a sun-colored frame between two illustrations.
+import Tag from './Tag.astro';
+import MeetupArt from './MeetupArt.astro';
+import { site } from '../data/site';
+import type { SiteEvent } from '../data/events';
+import { formatDate } from '../lib/format';
+import { arrow } from '../lib/ui';
+interface Props { meetup: SiteEvent; id?: string; last?: boolean; }
+const { meetup, id = 'next-event', last = false } = Astro.props;
+const d = meetup.date ? new Date(`${meetup.date}T00:00:00Z`) : null;
+const part = (o: Intl.DateTimeFormatOptions) => (d ? new Intl.DateTimeFormat('en-US', { ...o, timeZone: 'UTC' }).format(d) : '');
+---
+<section class:list={['frame event-frame', !last && 'event-frame--mid']} id={id} aria-labelledby={`${id}-title`} data-reveal>
+  <div class="wrap event">
+    <div class="event-art"><MeetupArt side="left" /></div>
+    <div class="event-body">
+      <Tag kind="community">Community meetup</Tag>
+      {d && <p class="event-date"><span class="ev-day">{part({ day: 'numeric' })}</span><span class="ev-rest">{part({ weekday: 'long' })}<br />{part({ month: 'long', year: 'numeric' })}</span></p>}
+      <h2 id={`${id}-title`}>{meetup.title}</h2>
+      <p class="event-when">{meetup.time}. {meetup.format}, in {meetup.language}, free.</p>
+      <p class="event-text">{meetup.abstract}</p>
+      <div class="cluster event-ctas">
+        <a class="cta cta--primary" href={site.meetup.callForTalks} target="_blank" rel="noopener">Propose a talk <Fragment set:html={arrow} /></a>
+        <a class="cta cta--outline" href={site.meetup.codeOfConduct} target="_blank" rel="noopener">Code of conduct</a>
+      </div>
+      <p class="event-note">Call for talks open until {formatDate(site.meetup.callForTalksCloses)}. <a class="link" href={site.links.meetup} target="_blank" rel="noopener">Meetup page on GitHub</a></p>
+    </div>
+    <div class="event-art"><MeetupArt side="right" /></div>
+  </div>
+</section>

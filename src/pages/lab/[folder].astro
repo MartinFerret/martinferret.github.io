@@ -1,0 +1,134 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Tag from '../../components/Tag.astro';
+import StatusPill from '../../components/StatusPill.astro';
+import BarChart from '../../components/BarChart.astro';
+import Versions from '../../components/Versions.astro';
+import { experiments, compilers, chartGroups, headline, machine, range, type Experiment } from '../../lib/lab';
+import { site } from '../../data/site';
+import { formatDate, seconds, megabytes } from '../../lib/format';
+
+export function getStaticPaths() {
+  return experiments.map((e) => ({ params: { folder: e.folder }, props: { e } }));
+}
+const { e } = Astro.props as { e: Experiment };
+const h = headline(e);
+const { groups, delta } = chartGroups(e);
+const sessions = e.sessions.slice().sort((a, b) => b.date.localeCompare(a.date));
+const vers = (s: string) => s.replace(/(\d+\.\d+\.\d+)/g, '<span class="ver">$1</span>');
+const md = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/`([^`]+)`/g, '<code>$1</code>');
+---
+<Base title={`Lab #${e.id}: ${e.title}`} description={e.verdict.replace(/`/g, '')} type="article">
+  <PageHero title={e.title} crumb={{ href: '/lab/', label: 'Performance Lab', after: `Experiment #${e.id}` }}>
+    <p class="hero-sub" slot="sub" set:html={md(e.question)} />
+    <a class="cta cta--soft" href="#results">See the results</a>
+    <a class="cta cta--onblue" href="#reproduce">Reproduce it</a>
+    <div slot="fig" class="res">
+      <span class="res-top"><Tag kind="lab">Lab #{e.id}</Tag><StatusPill status={e.status === 'open' ? 'open-question' : e.status} /></span>
+      {h ? (
+        <>
+          <span class="res-num">{h.value}</span>
+          <span class="res-label">{h.label}</span>
+        </>
+      ) : <span class="res-label">{e.verdict.replace(/`/g, '')}</span>}
+      <span class="res-meta">Computed from medians, {formatDate(sessions[0].date)}. Verified on <Versions list={compilers(e)} />.</span>
+    </div>
+  </PageHero>
+
+  <section class="wrap block" aria-labelledby="verdict" data-reveal>
+    <div class="verdict">
+      <div class="kcard v-main">
+        <h2 id="verdict">Verdict</h2>
+        <p class="read" set:html={md(e.verdict)} />
+        <h3>Takeaway</h3>
+        <p class="read" set:html={md(e.takeaway)} />
+        {e.notes?.map((n) => <p class="v-note"><b>Note</b> <span set:html={md(n)} /></p>)}
+      </div>
+      {groups.length > 0 && <div class="kcard v-chart"><h3>Median check time</h3><BarChart groups={groups} delta={delta} label={`Lab #${e.id}, median check time`} /></div>}
+    </div>
+  </section>
+
+  <section class="wrap block" id="results" aria-label="Results by machine">
+    {sessions.map((s) => {
+      const max = Math.max(...s.conditions.filter((c) => c.median).map((c) => range(c)?.max ?? c.median!.checkTime));
+      return (
+        <div class="session" data-reveal>
+          <div class="head-row">
+            <div><h2>Results on {s.environment.cpu.replace(/\(R\)/g, '').replace(/\s+/g, ' ')}</h2><p>{formatDate(s.date)}, {s.runsPerCondition} runs per condition{s.safetyCheck && `, safety check ${s.safetyCheck}`}. {machine(s)}, {s.environment.platform}.</p></div>
+          </div>
+          <div class="kcard">
+            <div class="bars" data-observe>
+              {s.conditions.map((c) => {
+                const r = range(c);
+                return (
+                  <div class="bar-row">
+                    <div class="bar-head"><span set:html={vers(c.label)} /><span class="v">{c.median ? `${seconds(c.median.checkTime)} median` : c.status.replace(/-/g, ' ')}</span></div>
+                    <div class="bar-track">
+                      {c.median && <div class="bar-fill" data-draw="x" data-variant={c.scope === 'after' ? 'after' : undefined} style={`width:${(c.median.checkTime / max) * 100}%`}></div>}
+                      {r && <span class="bar-range" aria-hidden="true" style={`left:${(r.min / max) * 100}%;width:${((r.max - r.min) / max) * 100}%`}></span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <p class="meta">Bar: median check time. Bracket: fastest to slowest run.</p>
+          </div>
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Results table, scrolls horizontally">
+            <table>
+              <thead><tr><th>Condition</th><th class="num">Check</th><th class="num">Total</th><th class="num">Memory</th><th class="num">Types</th><th class="num">Instantiations</th></tr></thead>
+              <tbody>
+                {s.conditions.map((c) => (
+                  <tr>
+                    <td set:html={vers(c.label)} />
+                    {c.median ? (
+                      <>
+                        <td class="num">{seconds(c.median.checkTime)}</td>
+                        <td class="num">{seconds(c.median.totalTime)}</td>
+                        <td class="num">{c.median.memoryUsedKB ? megabytes(c.median.memoryUsedKB) : 'n/a'}</td>
+                        <td class="num">{c.median.types.toLocaleString('en-US')}</td>
+                        <td class="num">{c.median.instantiations.toLocaleString('en-US')}</td>
+                      </>
+                    ) : <td class="num" colspan="5">{c.status.replace(/-/g, ' ')}</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    })}
+  </section>
+
+  <section class="frame sky-frame" id="reproduce" aria-labelledby="repro-title" data-reveal>
+    <div class="wrap">
+      <div class="head-row">
+        <div><h2 id="repro-title">Reproduce it</h2><p>Node.js 22 or later and git.{e.target && <> Target: {e.target.name} at commit <a class="link" href={`${e.target.repository}/tree/${e.target.commit}`}><span class="ver">{e.target.commit.slice(0, 7)}</span></a>.</>}</p></div>
+        {site.labRepo && <a class="cta cta--primary" href={`${site.labRepo}/tree/main/experiments/${e.folder}`}>Source and raw results</a>}
+      </div>
+      <pre class="code"><code>{e.reproduce}</code></pre>
+    </div>
+  </section>
+</Base>
+<style>
+  .res { display: grid; gap: 10px; }
+  .res-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .res-num { font-family: var(--font-display); font-size: clamp(3.5rem, 2rem + 4vw, 5.5rem); line-height: 1; letter-spacing: -0.05em; color: var(--c-blue); }
+  .res-label { font-size: var(--step-1); color: var(--ink); }
+  .res-meta { font-size: var(--step--1); color: var(--muted); padding-top: 10px; border-top: 1px solid var(--rule); }
+  .verdict { display: grid; gap: var(--grid-gap); }
+  .v-main h2 { font-size: var(--fs-h2); }
+  .v-main h3, .v-chart h3 { font-size: var(--step-1); margin-top: 8px; }
+  .v-note { font-size: var(--step--1); color: var(--ink-2); padding: 12px 14px; border-radius: 12px; background: var(--c-sun-soft); }
+  .v-note b { color: var(--c-amber-ink); margin-right: 6px; }
+  @media (min-width: 960px) { .verdict { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; } }
+  .session { display: grid; gap: var(--grid-gap); }
+  .session + .session { margin-top: var(--sec-y); }
+  .session .head-row { margin-bottom: 0; }
+  .session .kcard { gap: var(--s3); }
+  .bar-fill { background: #5b8fd9; }
+  .bar-fill[data-variant='after'] { background: var(--c-blue); }
+  .table-wrap { border-radius: 24px; padding: 4px var(--card-pad); }
+  .code { margin: 0; padding: var(--card-pad); border-radius: 24px; background: #0f1b2e; color: #dbe6f6; font-family: var(--font-mono); font-size: var(--step--1); line-height: 1.6; overflow-x: auto; box-shadow: 0 30px 60px -40px rgba(14, 23, 38, 0.6); }
+  .code code { font-size: inherit; }
+</style>

@@ -1,0 +1,117 @@
+---
+// Cumulative public contributions over time: a rising area chart with labelled milestones.
+// Every point comes from the ledger (getRecord): nothing typed by hand.
+import type { LedgerRow } from '../lib/record';
+import { buildDate } from '../data/site';
+import { formatDate, isoDay } from '../lib/format';
+interface Props { rows: LedgerRow[]; marks?: { date: string; label: string }[]; }
+const { rows, marks = [] } = Astro.props;
+
+const W = 760, H = 360, L = 40, R = 70, T = 30, B = 44;
+const day = (d: string) => Date.parse(`${d.slice(0, 10)}T00:00:00Z`);
+const sorted = rows.slice().sort((a, b) => a.date.localeCompare(b.date));
+const start = day(sorted[0].date) - 7 * 864e5;
+const end = day(isoDay(buildDate)) + 864e5;
+const x = (t: number) => L + ((t - start) / (end - start)) * (W - L - R);
+
+type Pt = { t: number; v: number; r?: LedgerRow };
+const cumulative = (list: LedgerRow[]): Pt[] => {
+  const pts: Pt[] = [{ t: start, v: 0 }];
+  list.forEach((r, i) => pts.push({ t: day(r.date), v: i + 1, r }));
+  pts.push({ t: end, v: list.length });
+  return pts;
+};
+const all = cumulative(sorted);
+const merged = cumulative(sorted.filter((r) => r.kind === 'pr' && r.status === 'merged'));
+const total = all[all.length - 1].v;
+const totalMerged = merged[merged.length - 1].v;
+const maxY = Math.ceil((total * 1.15) / 5) * 5;
+const y = (v: number) => T + (1 - v / maxY) * (H - T - B);
+const step = (pts: Pt[]) => pts.map((p, i) => (i === 0 ? `M${x(p.t)},${y(p.v)}` : `H${x(p.t)}V${y(p.v)}`)).join('');
+const area = (pts: Pt[]) => `${step(pts)}V${y(0)}H${x(start)}Z`;
+const ticks = Array.from({ length: maxY / 5 + 1 }, (_, i) => i * 5);
+const months: { t: number; label: string }[] = [];
+for (let m = new Date(start); m.getTime() <= end; m = new Date(Date.UTC(m.getUTCFullYear(), m.getUTCMonth() + 1, 1))) {
+  const first = Date.UTC(m.getUTCFullYear(), m.getUTCMonth() + 1, 1);
+  if (first <= end) months.push({ t: first, label: new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' }).format(first) });
+}
+const at = (pts: Pt[], t: number) => pts.filter((p) => p.t <= t).pop()!.v;
+// Milestone pills: placed above the curve, stacked so they never collide.
+const pills = marks.map((m, i) => {
+  const cx = x(day(m.date)); const cy = y(at(all, day(m.date)));
+  const w = m.label.length * 7.4 + 24;
+  const py = T + 4 + i * 42;
+  const px = Math.min(Math.max(cx - w - 18, L + 8), W - R - w);
+  return { ...m, cx, cy, w, px, py, i };
+});
+const dots = all.filter((p) => p.r);
+---
+<figure class="rc" data-observe>
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Cumulative public contributions from ${formatDate(sorted[0].date)} to ${formatDate(buildDate)}: ${total} in total, including ${totalMerged} merged pull requests.`}>
+    <defs>
+      <linearGradient id="rc-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d5fb8" stop-opacity="0.32" /><stop offset="0.7" stop-color="#1d5fb8" stop-opacity="0.06" /><stop offset="1" stop-color="#1d5fb8" stop-opacity="0" /></linearGradient>
+      <linearGradient id="rc-fill-m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#24875a" stop-opacity="0.22" /><stop offset="1" stop-color="#24875a" stop-opacity="0" /></linearGradient>
+      <filter id="rc-shadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0e1726" flood-opacity="0.16" /></filter>
+    </defs>
+    <g class="rc-grid">
+      {ticks.map((v) => <g><line x1={L} x2={W - R} y1={y(v)} y2={y(v)} /><text x={L - 12} y={y(v) + 4} text-anchor="end">{v}</text></g>)}
+      {months.map((m) => <g><line class="rc-month" x1={x(m.t)} x2={x(m.t)} y1={y(0)} y2={y(0) + 6} /><text x={x(m.t)} y={H - 14} text-anchor="middle">{m.label}</text></g>)}
+    </g>
+    <path class="rc-area" d={area(all)} fill="url(#rc-fill)" />
+    <path class="rc-area" d={area(merged)} fill="url(#rc-fill-m)" />
+    <path class="rc-line rc-line--merged" d={step(merged)} pathLength="1" />
+    <path class="rc-line rc-line--all" d={step(all)} pathLength="1" />
+    <g class="rc-dots">
+      {dots.map((p, i) => <circle cx={x(p.t)} cy={y(p.v)} r="4.5" style={`--k:${i}`}><title>{formatDate(p.r!.date)}: {p.r!.headline} ({p.r!.ref})</title></circle>)}
+    </g>
+    {pills.map((p) => (
+      <g class="rc-mark" style={`--d:${p.i}`}>
+        <path d={`M${p.cx},${p.cy - 8}V${p.py + 15}H${p.px + p.w}`} />
+        <circle class="rc-mark-dot" cx={p.cx} cy={p.cy} r="8" />
+        <g filter="url(#rc-shadow)"><rect x={p.px} y={p.py} width={p.w} height="30" rx="15" /></g>
+        <text x={p.px + p.w / 2} y={p.py + 20} text-anchor="middle">{p.label}</text>
+      </g>
+    ))}
+    <g class="rc-end" filter="url(#rc-shadow)">
+      <rect x={x(end) + 8} y={y(total) - 20} width="56" height="40" rx="12" />
+      <text x={x(end) + 36} y={y(total) + 7} text-anchor="middle">{total}</text>
+    </g>
+  </svg>
+  <figcaption class="rc-legend">
+    <span><i class="lg lg--all"></i>All public contributions, talks and experiments</span>
+    <span><i class="lg lg--merged"></i>Merged pull requests ({totalMerged})</span>
+    <span class="rc-hint">Hover a dot for the item</span>
+  </figcaption>
+</figure>
+<style>
+  .rc { margin: 0; display: grid; gap: 14px; }
+  .rc svg { width: 100%; height: auto; overflow: visible; font-family: var(--font-ui); }
+  .rc-grid line { stroke: #e3e9f0; }
+  .rc-grid .rc-month { stroke: var(--rule-strong); }
+  .rc-grid text { font-size: 13px; fill: var(--muted); }
+  .rc-line { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .rc-line--all { stroke: var(--c-blue); stroke-width: 4; }
+  .rc-line--merged { stroke: var(--c-mint); stroke-width: 3; }
+  .rc-dots circle { fill: #fff; stroke: var(--c-blue); stroke-width: 2.5; cursor: help; transition: r 0.15s; }
+  .rc-dots circle:hover { r: 7; }
+  .rc-mark path { stroke: var(--c-coral); stroke-width: 1.5; stroke-dasharray: 3 3; fill: none; }
+  .rc-mark-dot { fill: #fff; stroke: var(--c-coral); stroke-width: 3.5; }
+  .rc-mark rect { fill: #fff; stroke: var(--c-coral); stroke-width: 1.5; }
+  .rc-mark text { font-size: 13px; font-weight: 600; fill: var(--c-coral-ink); }
+  .rc-end rect { fill: var(--c-blue); }
+  .rc-end text { font-family: var(--font-display); font-size: 24px; fill: #fff; }
+  .rc-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 22px; font-size: var(--step--1); color: var(--ink-2); }
+  .rc-legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .rc-hint { color: var(--muted); margin-left: auto; }
+  .lg { width: 22px; height: 4px; border-radius: 2px; }
+  .lg--all { background: var(--c-blue); } .lg--merged { background: var(--c-mint); }
+  :global(.js) .rc .rc-line { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.8s var(--ease-out); }
+  :global(.js) .rc .rc-line--merged { transition-delay: 0.25s; }
+  :global(.js) .rc .rc-area { opacity: 0; transition: opacity 1s 0.7s; }
+  :global(.js) .rc .rc-dots circle { opacity: 0; transition: opacity 0.3s calc(0.9s + var(--k) * 40ms); }
+  :global(.js) .rc .rc-mark, :global(.js) .rc .rc-end { opacity: 0; transform: translateY(8px); transition: opacity 0.5s, transform 0.6s cubic-bezier(0.34, 1.4, 0.64, 1); transition-delay: calc(1.3s + var(--d, 2) * 0.2s); }
+  :global(.js) .rc[data-drawn] .rc-line { stroke-dashoffset: 0; }
+  :global(.js) .rc[data-drawn] .rc-area, :global(.js) .rc[data-drawn] .rc-dots circle { opacity: 1; }
+  :global(.js) .rc[data-drawn] .rc-mark, :global(.js) .rc[data-drawn] .rc-end { opacity: 1; transform: none; }
+  @media (max-width: 600px) { .rc-hint { display: none; } }
+</style>

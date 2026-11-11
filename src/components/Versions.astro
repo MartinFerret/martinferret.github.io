@@ -1,0 +1,6 @@
+---
+// Renders "TypeScript 6.0.3 and TypeScript 7.0.2" with version numbers in mono (the only place mono appears in UI text).
+interface Props { list: string[]; }
+const parts = Astro.props.list.map((c) => { const m = c.match(/^(.*?)\s*(\d+\.\d+\.\d+)$/); return m ? { name: m[1], v: m[2] } : { name: c, v: '' }; });
+---
+{parts.map((p, i) => (<>{i > 0 && (i === parts.length - 1 ? ' and ' : ', ')}{p.name} {p.v && <span class="ver">{p.v}</span>}</>))}

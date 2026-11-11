@@ -1,0 +1,130 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import StageCard from '../components/StageCard.astro';
+import Tag from '../components/Tag.astro';
+import { site, mailto } from '../data/site';
+import { pastEvents } from '../lib/record';
+import { arrow } from '../lib/ui';
+
+// Copy below is Martin's own, used verbatim. Organizers copy it with the buttons.
+const intro = 'I speak about TypeScript performance, the TypeScript compiler and AI agents built in TypeScript. Talks, workshops, podcasts and meetups, in English or French, on site or online.';
+const bio = "I'm a TypeScript developer focused on type-checking performance and TypeScript 7. I measure what makes TypeScript slow, then fix it: I run a public TypeScript Performance Lab with reproducible experiments, and my fixes to TypeScript's DOM types have been merged into Microsoft's TypeScript-DOM-lib-generator. I'm Lead Content Owner for the JavaScript and TypeScript certifications at Certificates.dev, and I've spent seven years building large-scale enterprise applications with TypeScript, Angular and Spring Boot. I also host What's up TypeScript France, an online TypeScript meetup.";
+const talks = [
+  {
+    id: 'dom', title: 'The DOM Is Lying to Your Types', level: 'Expert', format: '30 to 45 min', tone: 'blue',
+    abstract: "Every TypeScript project trusts lib.dom.d.ts, but it isn't written by hand: a generator turns web specifications into types, and that translation is where bugs hide. Optional parameters that throw, iterables typed as arrays, return types lost on the way. I fix these bugs upstream in Microsoft's generator. In this talk, I show how WebIDL becomes TypeScript, why the spec and not MDN is the source of truth, how to prove a DOM type is wrong, and how a fix travels from a pull request to your editor.",
+  },
+  {
+    id: 'budget', title: "Your Types Have a Performance Budget. You're Just Not Measuring It.", level: 'Expert', format: '30 to 45 min, also as a half-day workshop', tone: 'violet',
+    abstract: "A one-line type change can multiply type-checking cost by ten without breaking a test: real projects shipped 23 times more instantiations and CI jobs that crashed. We budget bundle size and page speed, so why not types? The compiler's counters are deterministic: same code, same numbers on any machine, perfect for a CI gate. I show how to measure the cost of your types, find the generic that dominates it, and fail a pull request before your build slows down.",
+  },
+  {
+    id: 'agents', title: 'Your AI Agent Is Slowing Down Your Compiler', level: 'Intermediate to expert', format: '30 to 45 min', tone: 'coral',
+    abstract: "Typed AI agents are everywhere: tools described with schemas, structured outputs inferred into TypeScript types, SDKs built on deeply generic APIs. Great for safety, but they can quietly crush your type-checker. I'm measuring what schemas, tool definitions and AI SDK types cost the TypeScript compiler as an agent grows from 1 to 50 tools, and which ways of writing them stay fast. You'll see the numbers, why some patterns explode, and how to keep agents fully typed and fast to build.",
+  },
+];
+const past = pastEvents().filter((e) => e.kind !== 'Milestone');
+const copyIcon = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
+---
+<Base title="Invite me to speak" description={intro}>
+  <PageHero title="Invite me to speak" lede={intro}>
+    <a class="cta cta--soft" href={mailto}>Invite me to speak <Fragment set:html={arrow} /></a>
+    <a class="cta cta--onblue" href={site.links.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+  </PageHero>
+
+  <section class="wrap block" aria-labelledby="bio-title" data-reveal>
+    <div class="bio">
+      <div class="kcard bio-card">
+        <div class="bio-head">
+          <h2 id="bio-title">Short bio</h2>
+          <button class="copy" type="button" data-copy="bio-text"><Fragment set:html={copyIcon} /><span data-copy-label>Copy bio</span></button>
+        </div>
+        <p class="bio-text" id="bio-text">{bio}</p>
+      </div>
+      <figure class="photo">
+        <img src={site.photo.src} alt="Portrait of Martin Ferret" width={site.photo.width} height={site.photo.height} loading="lazy" />
+        <figcaption>
+          <a class="cta cta--outline" href={site.photo.src} download="martin-ferret-portrait.webp">
+            <svg viewBox="0 0 20 20" aria-hidden="true" class="arr"><path d="M10 3v10m-4-4 4 4 4-4M4 17h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            Download high-resolution photo
+          </a>
+          <span class="meta">WebP, {site.photo.width} × {site.photo.height} px, original file</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="frame sky-frame" aria-labelledby="talks-title" data-reveal>
+    <div class="wrap">
+      <div class="head-center"><Tag kind="talk">Talks</Tag><h2 id="talks-title">Talks you can book</h2><p>Each one can run as a talk, online or on site, in English or French.</p></div>
+      <ul class="g3 talks" role="list">
+        {talks.map((t, i) => (
+          <li style={`--i:${i}`}>
+            <article class={`kcard talk talk--${t.tone}`} aria-labelledby={`t-${t.id}`}>
+              <span class="talk-bar" aria-hidden="true"></span>
+              <h3 class="kcard-title" id={`t-${t.id}`}>{t.title}</h3>
+              <dl class="talk-meta">
+                <div><dt>Level</dt><dd>{t.level}</dd></div>
+                <div><dt>Format</dt><dd>{t.format}</dd></div>
+              </dl>
+              <p class="kcard-text" id={`abs-${t.id}`}>{t.abstract}</p>
+              <button class="copy" type="button" data-copy={`abs-${t.id}`}><Fragment set:html={copyIcon} /><span data-copy-label>Copy abstract</span></button>
+            </article>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {past.length > 0 && (
+    <section class="wrap block" aria-labelledby="past-title" data-reveal>
+      <div class="head-row"><div><h2 id="past-title">Past talks</h2><p>Delivered, newest first.</p></div><a class="cta cta--ghost" href="/speaking/">All speaking <Fragment set:html={arrow} /></a></div>
+      <ul class="g2" role="list">{past.map((e, i) => <li style={`--i:${i}`}><StageCard e={e} i={i} heading /></li>)}</ul>
+    </section>
+  )}
+
+  <section class="frame contact-frame" aria-labelledby="contact-title" data-reveal>
+    <div class="wrap contact">
+      <h2 id="contact-title">Organizing an event?</h2>
+      <p>Tell me about your audience, the date and the format.</p>
+      <div class="cluster contact-ctas">
+        <a class="cta cta--primary" href={mailto}>Invite me to speak <Fragment set:html={arrow} /></a>
+        <a class="cta cta--outline" href={site.links.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+      <p class="meta">Or write to <a class="link" href={mailto}>{site.contactEmail}</a></p>
+    </div>
+  </section>
+</Base>
+<style>
+  .bio { display: grid; gap: var(--grid-gap); align-items: start; }
+  .bio-card { gap: var(--s3); }
+  .bio-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+  .bio-head h2 { font-size: var(--fs-h2); }
+  .bio-text { font-size: var(--step-1); line-height: 1.6; color: var(--ink); max-width: 64ch; }
+  .photo { margin: 0; display: grid; justify-items: center; gap: var(--s2); padding: var(--card-pad); border-radius: 24px; background: var(--c-sky); }
+  .photo img { width: min(100%, 300px); height: auto; aspect-ratio: 1; border-radius: 50%; border: 6px solid #fff; box-shadow: 0 30px 60px -30px rgba(23, 77, 150, 0.6); }
+  .photo figcaption { display: grid; justify-items: center; gap: 8px; text-align: center; }
+  @media (min-width: 960px) { .bio { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); } }
+
+  .copy { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1.5px solid var(--rule-strong); background: var(--sheet); color: var(--ink); font: inherit; font-size: var(--step--1); font-weight: 600; cursor: pointer; transition: background-color var(--t-fast), border-color var(--t-fast), color var(--t-fast); }
+  .copy:hover { border-color: var(--c-blue); color: var(--c-blue); }
+  .copy :global(svg) { width: 16px; height: 16px; }
+  .copy[data-copied] { background: var(--st-merged-bg); border-color: var(--st-merged); color: var(--st-merged); }
+
+  .talks .talk { position: relative; overflow: hidden; gap: 14px; height: 100%; padding-top: calc(var(--card-pad) + 8px); }
+  .talk-bar { position: absolute; left: 0; right: 0; top: 0; height: 8px; background: var(--t); }
+  .talk--blue { --t: var(--c-blue); } .talk--violet { --t: var(--c-violet); } .talk--coral { --t: var(--c-coral); }
+  .talk .kcard-title { font-size: var(--step-2); }
+  .talk-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+  .talk-meta div { display: inline-flex; gap: 6px; padding: 6px 10px; border-radius: 999px; background: var(--fill); font-size: var(--step--2); }
+  .talk-meta dt { font-weight: 600; color: var(--muted); }
+  .talk-meta dd { margin: 0; font-weight: 600; color: var(--ink); }
+  .talk .copy { justify-self: start; margin-top: auto; }
+
+  .contact-frame { background: var(--c-sun-soft); background-image: radial-gradient(#f5dfa3 1.5px, transparent 1.5px); background-size: 22px 22px; margin-bottom: var(--frame); }
+  .contact { display: grid; justify-items: center; gap: var(--s2); text-align: center; }
+  .contact h2 { font-size: var(--fs-h1); }
+  .contact p { color: var(--ink-2); max-width: 48ch; }
+  .contact-ctas { justify-content: center; margin-top: var(--s1); }
+</style>

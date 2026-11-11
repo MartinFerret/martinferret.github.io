@@ -1,0 +1,36 @@
+---
+import StatusPill from './StatusPill.astro';
+import { contributionId, displayTitle, kindLabel, projectLabel, refUrl, relationLabel } from '../data/contributions';
+import type { LiveContribution } from '../lib/github';
+import { formatDate } from '../lib/format';
+interface Props { c: LiveContribution; }
+const { c } = Astro.props;
+const date = c.merged ?? c.date;
+const verb = c.merged ? 'Merged' : c.kind === 'pr' ? 'Opened' : c.kind === 'issue' ? 'Commented' : 'Answered';
+const linkLabel = c.kind === 'pr' ? 'Pull request on GitHub' : c.kind === 'issue' ? 'Comment on GitHub' : 'Answer on Stack Overflow';
+const text = [displayTitle(c), c.title, c.project, projectLabel(c.project), c.number, c.summary, kindLabel[c.kind], c.relation?.ref].filter(Boolean).join(' ')
+  .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\u2019']/g, '');
+---
+<li class="w-row" id={contributionId(c)} data-item data-kind={c.kind} data-status={c.status} data-project={c.project} data-text={text}>
+  <details>
+    <summary>
+      <span class="w-main">
+        <span class="w-title">{displayTitle(c)}</span>
+        <span class="w-ref">{projectLabel(c.project)}{c.number && ` #${c.number}`}<span class="w-kind">, {kindLabel[c.kind].toLowerCase()}</span></span>
+      </span>
+      <time class="w-date" datetime={date}>{formatDate(date)}</time>
+      <span class="w-badge"><StatusPill status={c.status} /></span>
+      <svg class="w-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+    </summary>
+    <div class="w-detail">
+      <p class="w-summary">{c.summary}</p>
+      {c.headline && <p class="meta">Original title: <span class="w-orig">{c.title}</span></p>}
+      <div class="proofs">
+        <a class="proof" href={c.url} target="_blank" rel="noopener">{linkLabel}</a>
+        {c.relation && <a class="proof" href={refUrl(c.relation.ref)} target="_blank" rel="noopener">{relationLabel(c.relation)}</a>}
+        <span class="proof">{verb} {formatDate(date)}</span>
+        {c.diff && <span class="proof" aria-label={`${c.diff.added} lines added, ${c.diff.removed} removed`}>+{c.diff.added} / −{c.diff.removed} lines</span>}
+      </div>
+    </div>
+  </details>
+</li>

@@ -1,0 +1,10 @@
+node_modules
+dist
+.astro
+dist-preview
+.DS_Store
+.idea/
+.claude/
+.agents/
+review/
+skills-lock.json

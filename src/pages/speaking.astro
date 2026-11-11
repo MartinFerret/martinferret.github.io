@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import StageCard from '../components/StageCard.astro';
+import PodcastArt from '../components/PodcastArt.astro';
+import MeetupArt from '../components/MeetupArt.astro';
+import Pizza from '../components/Pizza.astro';
+import Tag from '../components/Tag.astro';
+import StatusPill from '../components/StatusPill.astro';
+import { pastEvents, upcoming, eventId, eventWhen } from '../lib/record';
+import { site } from '../data/site';
+import { formatDate } from '../lib/format';
+import { arrow } from '../lib/ui';
+
+// Upcoming and past are computed from dates at build: an item moves to "Past" on its own once its date has passed.
+const next = upcoming();
+const past = pastEvents().filter((e) => e.kind !== 'Milestone');
+const kindTag = (k: string) => (k === 'Podcast' ? 'podcast' : k === 'Community' ? 'community' : k === 'Workshop' ? 'workshop' : 'talk') as 'podcast' | 'community' | 'workshop' | 'talk';
+---
+<Base title="Speaking" description="Upcoming and past talks, workshops, podcasts and meetups by Martin Ferret, including What's up TypeScript France.">
+  <PageHero title="Speaking" lede="Talks, workshops, podcasts and meetups on TypeScript performance, the compiler and typed AI agents. Every talk comes from a published experiment or a merged fix.">
+    <a class="cta cta--soft" href="/speak/">Invite me to speak <Fragment set:html={arrow} /></a>
+    <a class="cta cta--onblue" href={site.links.sessionize} target="_blank" rel="noopener">Sessionize profile</a>
+  </PageHero>
+
+  {next.length > 0 && (
+    <section class="wrap block" aria-labelledby="upcoming-title" data-reveal>
+      <div class="head-row"><div><h2 id="upcoming-title">Upcoming</h2><p>Soonest first.</p></div></div>
+      <ul class="g2" role="list">
+        {next.map((e, i) => (
+          <li style={`--i:${i}`}>
+            <article class={`up up--${e.kind === 'Podcast' ? 'coral' : e.kind === 'Community' ? 'mint' : 'sun'}`} id={e.kind === 'Community' ? 'community' : eventId(e)} aria-labelledby={`up-${i}`}>
+              <div class="up-art">{e.kind === 'Podcast' ? <PodcastArt /> : e.kind === 'Community' ? <MeetupArt side="right" /> : <Pizza />}</div>
+              <div class="up-body">
+                <span class="up-tags"><Tag kind={kindTag(e.kind)}>{e.role ? `${e.role}, ${e.kind === 'Community' ? 'meetup' : e.kind.toLowerCase()}` : e.kind}</Tag><StatusPill status="upcoming" /></span>
+                <h3 class="up-title" id={`up-${i}`}>{e.kind === 'Podcast' ? e.where : e.title}</h3>
+                {e.kind === 'Podcast' && <p class="up-sub">Episode: {e.title}</p>}
+                <p class="up-when"><b>{eventWhen(e)}</b>{e.time && `, ${e.time}`}{e.format && `. ${e.format}`}{e.language && `, in ${e.language}`}.</p>
+                {e.abstract && <p class="up-text">{e.abstract}</p>}
+                {e.kind === 'Community' && (
+                  <div class="cluster up-links">
+                    {site.meetup.registration && <a class="cta cta--primary" href={site.meetup.registration} target="_blank" rel="noopener">Register <Fragment set:html={arrow} /></a>}
+                    <a class:list={['cta', site.meetup.registration ? 'cta--outline' : 'cta--primary']} href={site.meetup.callForTalks} target="_blank" rel="noopener">Propose a talk <Fragment set:html={arrow} /></a>
+                    <a class="cta cta--outline" href={site.links.meetup} target="_blank" rel="noopener">Meetup page</a>
+                  </div>
+                )}
+                {e.kind === 'Community' && <p class="meta">Call for talks open until {formatDate(site.meetup.callForTalksCloses)}. <a class="link" href={site.meetup.codeOfConduct} target="_blank" rel="noopener">Code of conduct</a>.</p>}
+              </div>
+            </article>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {past.length > 0 && (
+    <section class="wrap block" aria-labelledby="past-title" data-reveal>
+      <div class="head-row"><div><h2 id="past-title">Past</h2><p>Newest first.</p></div></div>
+      <ul class="g2" role="list">{past.map((e, i) => <li style={`--i:${i}`}><StageCard e={e} i={i} heading /></li>)}</ul>
+    </section>
+  )}
+
+  <section class="frame invite-frame" aria-labelledby="invite-title" data-reveal>
+    <div class="wrap invite">
+      <h2 id="invite-title">Organizing an event? Invite me</h2>
+      <p>Bio, photo, talk abstracts and contact, ready to copy.</p>
+      <a class="cta cta--primary" href="/speak/">Invite me to speak <Fragment set:html={arrow} /></a>
+    </div>
+  </section>
+</Base>
+<style>
+  .up { display: grid; grid-template-rows: auto 1fr; height: 100%; border-radius: 24px; overflow: hidden; background: var(--sheet); border: 1px solid var(--rule); }
+  .up-art { display: grid; place-items: center; height: 220px; padding: var(--card-pad); }
+  .up-art :global(svg) { max-height: 180px; width: auto; }
+  .up--coral .up-art { background: var(--c-coral-soft); }
+  .up--mint .up-art { background: var(--c-mint-soft); }
+  .up--sun .up-art { background: var(--c-sun-soft); }
+  .up-body { display: grid; gap: 12px; align-content: start; padding: var(--card-pad); }
+  .up-tags { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: center; }
+  .up-title { font-size: var(--step-3); line-height: 1.12; }
+  .up-sub { font-weight: 600; color: var(--ink-2); }
+  .up-when { font-size: var(--step-0); color: var(--ink-2); }
+  .up-when b { color: var(--ink); }
+  .up-text { color: var(--ink-2); }
+  .up-links { margin-top: 4px; }
+  .invite-frame { background: var(--c-sky); background-image: radial-gradient(#c4d8f5 1.4px, transparent 1.4px); background-size: 26px 26px; margin-bottom: var(--frame); }
+  .invite { display: grid; justify-items: center; gap: var(--s2); text-align: center; }
+  .invite h2 { font-size: var(--fs-h1); max-width: 18ch; }
+  .invite p { color: var(--ink-2); }
+</style>

@@ -1,0 +1,75 @@
+---
+import '@fontsource-variable/geist/index.css';
+import '@fontsource-variable/funnel-display/index.css';
+import '@fontsource-variable/jetbrains-mono/index.css';
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Search from '../components/Search.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+import { ogPathFor } from '../lib/og';
+
+interface Props { title?: string; description?: string; type?: 'website' | 'article'; }
+const { title, description = site.bio, type = 'website' } = Astro.props;
+const fullTitle = title ? `${title}, ${site.name}` : `${site.name}: faster TypeScript for the age of AI`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(await ogPathFor(Astro.url.pathname), Astro.site);
+const person = {
+  '@context': 'https://schema.org', '@type': 'Person', name: site.name, url: Astro.site?.toString(),
+  jobTitle: 'TypeScript expert', description: site.bio,
+  address: { '@type': 'PostalAddress', addressCountry: site.country }, workLocation: { '@type': 'Place', name: site.location },
+  sameAs: Object.values(site.links), knowsAbout: ['TypeScript', 'Type-checking performance', 'DOM type definitions'],
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title ?? `${site.name}, TypeScript expert`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="theme-color" content="#f7f9fb" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name}: writing`} href="/rss.xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+      })();
+    </script>
+    <ClientRouter fallback="none" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="shell">
+      <Header />
+      <div class="main">
+        <main id="main" transition:name="main" transition:animate="fade">
+          <slot />
+        </main>
+        <Footer />
+      </div>
+    </div>
+    <Search />
+    <script>
+      import { boot } from '../lib/client';
+      boot();
+    </script>
+  </body>
+</html>

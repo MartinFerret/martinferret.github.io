@@ -1,0 +1,23 @@
+---
+// One experiment as a zig-zag row: text on one side, its bar chart on the other.
+import Tag from './Tag.astro';
+import StatusPill from './StatusPill.astro';
+import BarChart from './BarChart.astro';
+import { chartGroups, headline, type Experiment } from '../lib/lab';
+import { arrow } from '../lib/ui';
+interface Props { e: Experiment; reverse?: boolean; heading?: 'h2' | 'h3'; }
+const { e, reverse = false, heading = 'h3' } = Astro.props;
+const h = headline(e);
+const { groups, delta } = chartGroups(e);
+const H = heading;
+---
+<article class:list={['zig', reverse && 'zig--rev']} data-reveal>
+  <div class="zig-text">
+    <span class="zig-tags"><Tag kind="lab">Lab #{e.id}</Tag><StatusPill status={e.status === 'open' ? 'open-question' : e.status} /></span>
+    <H>{e.title.split(':')[0]}</H>
+    {h && <p class="zig-result"><span class="big">{h.value}</span><span>{h.label}</span></p>}
+    <p class="zig-verdict">{e.verdict.replace(/`/g, '')}</p>
+    <a class="cta cta--outline" href={`/lab/${e.folder}/`}>Read the experiment <Fragment set:html={arrow} /></a>
+  </div>
+  {groups.length > 0 && <div class="zig-chart"><BarChart groups={groups} delta={delta} label={`Lab #${e.id}, median check time`} /></div>}
+</article>

@@ -1,0 +1,177 @@
+---
+import Base from '../layouts/Base.astro';
+import StatusPill from '../components/StatusPill.astro';
+import Tag from '../components/Tag.astro';
+import RisingChart from '../components/RisingChart.astro';
+import Donut from '../components/Donut.astro';
+import CodeWindow from '../components/CodeWindow.astro';
+import LabRow from '../components/LabRow.astro';
+import StageCard from '../components/StageCard.astro';
+import MeetupFeature from '../components/MeetupFeature.astro';
+import { site, contactHref } from '../data/site';
+import { events } from '../data/events';
+import { contributionId, displayTitle, projectLabel } from '../data/contributions';
+import { getContributions } from '../lib/github';
+import { getRecord, metricsFrom, metric, latestDelivered, eventId, upcoming } from '../lib/record';
+import { experiments } from '../lib/lab';
+import { arrow } from '../lib/ui';
+import { formatDate, breakable } from '../lib/format';
+
+const list = await getContributions();
+const { rows } = await getRecord();
+const metrics = metricsFrom(rows);
+const mMerged = metric(metrics, 'ms-merged');
+const mMs = metric(metrics, 'ms-prs');
+const mReview = metric(metrics, 'in-review');
+const mProjects = metric(metrics, 'ts-projects');
+const reviewPrs = list.filter((c) => c.kind === 'pr' && c.status === 'open');
+const tsProjects = [...new Set(list.filter((c) => c.project.startsWith('microsoft/') || c.project.startsWith('sindresorhus/')).map((c) => projectLabel(c.project)))];
+const initials = (p: string) => ({ 'TypeScript DOM types': 'DOM', TypeScript: 'TS', 'TypeScript website': 'Web', 'type-fest': 'tf' } as Record<string, string>)[p] ?? p.slice(0, 3);
+
+// Chart milestones come from the events data.
+const workshop = latestDelivered();
+const firstMerge = events.find((e) => e.kind === 'Milestone' && e.url?.includes('/pull/'));
+const marks = [
+  ...(workshop?.date ? [{ date: workshop.date, label: `${workshop.kind} at ${workshop.where.split(',')[0]}` }] : []),
+  ...(firstMerge?.date ? [{ date: firstMerge.date, label: 'First merge in TypeScript’s DOM types' }] : []),
+];
+
+// Lab rows: the two published experiments, newest last.
+const labs = experiments.slice().sort((x, y) => x.id.localeCompare(y.id));
+
+// Fixes: the featured merged PR (big card) and the two latest others.
+const msMerged = list.filter((c) => c.kind === 'pr' && c.status === 'merged' && c.project.startsWith('microsoft/'));
+const featured = msMerged.find((c) => c.featured) ?? msMerged[0];
+const others = msMerged.filter((c) => c !== featured).slice(0, 2);
+
+const podcast = upcoming().find((e) => e.kind === 'Podcast');
+const meetup = upcoming().find((e) => e.kind === 'Community' && e.date);
+---
+<Base>
+  <!-- 1. Hero: two balanced halves, words and the portrait -->
+  <section class="frame hero-panel" aria-labelledby="hero-title">
+   <div class="wrap hero">
+    <div class="hero-text">
+      <h1 class="hero-title" id="hero-title">Faster TypeScript for the age of AI.</h1>
+      <p class="hero-sub">I measure what slows the type checker down and fix it upstream, so types keep catching mistakes, whoever wrote the code.</p>
+      <div class="cluster hero-actions">
+        <a class="cta cta--soft" href="/work/">See my work <Fragment set:html={arrow} /></a>
+        {meetup && <a class="cta cta--onblue" href="#next-event">Next event</a>}
+      </div>
+    </div>
+    <figure class="hero-photo">
+      <img src="/martin-ferret.webp" alt="Portrait of Martin Ferret" width="512" height="512" fetchpriority="high" />
+      <figcaption><b>{site.name}</b> TypeScript expert</figcaption>
+    </figure>
+   </div>
+  </section>
+
+  <!-- 2. Numbers: chart (2/3) + stacked KPI tiles (1/3) -->
+  <section class="wrap block" aria-labelledby="numbers-title" data-reveal>
+    <div class="head-row">
+      <div><h2 id="numbers-title">The record keeps climbing</h2><p>Counted at build from GitHub on {formatDate(mMerged.asOf)}.</p></div>
+      <a class="cta cta--ghost" href="/timeline/">Full timeline <Fragment set:html={arrow} /></a>
+    </div>
+    <div class="numbers">
+      <div class="chart-card">
+        <h3 class="chart-title">Public contributions since {formatDate(rows[rows.length - 1].date)}</h3>
+        <RisingChart rows={rows} marks={marks} />
+      </div>
+      <ul class="kpis" role="list">
+        <li style="--i:0">
+          <a class="kpi kpi--mint" href="/work/?status=merged">
+            <span class="kpi-text"><span class="kpi-value" data-metric={mMerged.key} data-count={mMerged.value}>{mMerged.value}</span><span class="kpi-label">{mMerged.label}</span></span>
+            <Donut value={mMerged.value} total={mMs.value} label={`${mMerged.value} of ${mMs.value} pull requests at Microsoft merged`} />
+          </a>
+        </li>
+        <li style="--i:1">
+          <a class="kpi kpi--sun" href="/work/?status=open">
+            <span class="kpi-text"><span class="kpi-value" data-metric={mReview.key} data-count={mReview.value}>{mReview.value}</span><span class="kpi-label">{mReview.label}</span></span>
+            <span class="kpi-stack" aria-hidden="true">{reviewPrs.map((c) => <span class="kpi-pr">#{c.number}</span>)}</span>
+          </a>
+        </li>
+        <li style="--i:2">
+          <a class="kpi kpi--blue" href="/work/">
+            <span class="kpi-text"><span class="kpi-value" data-metric={mProjects.key} data-count={mProjects.value}>{mProjects.value}</span><span class="kpi-label">{mProjects.label}</span></span>
+            <span class="avatars" aria-hidden="true">{tsProjects.map((p, i) => <span class={`av av--${i % 4}`} title={p}>{initials(p)}</span>)}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3. Lab: zig-zag rows -->
+  {labs.length > 0 && (
+    <section class="frame lab-band" aria-labelledby="lab-title">
+      <div class="wrap">
+        <div class="head-center" data-reveal>
+          <Tag kind="lab">TypeScript Performance Lab</Tag>
+          <h2 id="lab-title">Measured, not guessed</h2>
+          <p>Each experiment ships its code, the exact command and the raw results, with the machine they ran on.</p>
+        </div>
+        {labs.map((e, i) => <LabRow e={e} reverse={i % 2 === 1} />)}
+      </div>
+    </section>
+  )}
+
+  <!-- 4. Fixes: bento, one large card and two compact ones -->
+  {featured && (
+    <section class="wrap block" aria-labelledby="fixes-title" data-reveal>
+      <div class="head-row">
+        <div><h2 id="fixes-title">Fixes merged into TypeScript</h2><p>Accepted by Microsoft’s maintainers. Each one turns a runtime surprise into a type you can trust.</p></div>
+        <a class="cta cta--ghost" href="/work/">All contributions <Fragment set:html={arrow} /></a>
+      </div>
+      <ul class="bento" role="list">
+        <li class="bento-big" style="--i:0">
+          <a class="fix fix--big" href={`/work/#${contributionId(featured)}`}>
+            {featured.snippet && <span class="fix-visual"><CodeWindow lines={featured.snippet} /></span>}
+            <span class="fix-body">
+              <span class="fix-tags"><Tag kind="pr">{projectLabel(featured.project)} #{featured.number}</Tag><StatusPill status={featured.status} /></span>
+              <span class="fix-title" set:html={breakable(displayTitle(featured))} />
+              <span class="fix-sum">{featured.summary}</span>
+              {featured.merged && <span class="fix-date">Merged {formatDate(featured.merged)}</span>}
+            </span>
+          </a>
+        </li>
+        {others.map((c, i) => (
+          <li style={`--i:${i + 1}`}>
+            <a class={`fix fix--small fix--${i === 0 ? 'blue' : 'mint'}`} href={`/work/#${contributionId(c)}`}>
+              <span class="fix-art" aria-hidden="true">
+                <svg class="branch" viewBox="0 0 120 80"><path d="M10 60h40c20 0 20-40 40-40h20M10 60h100" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><circle cx="10" cy="60" r="6" /><circle cx="90" cy="20" r="6" /><circle cx="110" cy="60" r="7" /></svg>
+                <span class="fix-num">#{c.number}</span>
+              </span>
+              <span class="fix-body">
+                <span class="fix-tags"><StatusPill status={c.status} /><span class="fix-proj">{projectLabel(c.project)}</span></span>
+                <span class="fix-title">{displayTitle(c)}</span>
+                {c.merged && <span class="fix-date">Merged {formatDate(c.merged)}</span>}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <!-- 5. On stage and on air: two staggered cards -->
+  {(podcast || workshop) && (
+    <section class="wrap block" aria-labelledby="stage-title" data-reveal>
+      <div class="stage-grid">
+        <div class="stage-intro">
+          <Tag kind="talk">Speaking</Tag>
+          <h2 id="stage-title">On stage and on air</h2>
+          <p>Talks, workshops and podcasts built on the same measurements, so the audience can check the numbers afterwards.</p>
+          <a class="cta cta--primary" href={contactHref}>Invite me to speak <Fragment set:html={arrow} /></a>
+        </div>
+        {podcast && <StageCard e={podcast} i={0} href={`/speaking/#${eventId(podcast)}`} />}
+        {workshop && <StageCard e={workshop} i={1} href={`/speaking/#${eventId(workshop)}`} />}
+      </div>
+    </section>
+  )}
+
+  <!-- 6. Next event: centered, framed by two illustrations -->
+  {meetup && <MeetupFeature meetup={meetup} last />}
+</Base>
+
+<style>
+  /* Home uses the shared kit (src/styles/kit.css). */
+</style>
