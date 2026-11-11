@@ -1,0 +1,378 @@
+# Martin Ferret
+
+> Martin Ferret is a French TypeScript expert focused on type-checking performance, a contributor to Microsoft's TypeScript DOM types, and Lead Content Owner for the JavaScript and TypeScript certifications at Certificates.dev.
+
+Contact: mferret.pro@gmail.com. Last updated 2026-11-11. Full text of the key pages: https://martinferret.github.io/llms-full.txt
+
+## Services
+- TypeScript performance audit: measure type-checking time and memory on the team's real codebase, find the types and files that cost the most, deliver a prioritized fix list.
+- TypeScript 7 migration: measure TypeScript 6 vs 7 on the team's project, check memory in CI, plan a safe migration.
+- Type-checking budget in CI: budgets based on the compiler's counters, with a tolerance calibrated on the project, so a pull request can't silently slow the build down.
+- Team training and workshops: advanced TypeScript and type performance, for Angular, React and Node.js teams.
+
+---
+
+# Work with me
+
+URL: https://martinferret.github.io/hire/
+
+## TypeScript performance expert for engineering teams
+I help engineering teams make TypeScript fast again: slow type-checking, CI jobs that run out of memory, and the move to TypeScript 7. I measure what your types really cost, fix it without weakening type safety, and leave your team the tools to keep it fast.
+Book an intro call See the Lab
+
+## What your team gets
+Four ways to work together, each on your real codebase.
+Service 1
+
+## TypeScript performance audit
+I measure type-checking time and memory on your real codebase, find the types and files that cost the most, and deliver a prioritized list of fixes.
+
+Service 2
+
+## TypeScript 7 migration
+I measure TypeScript 6 against TypeScript 7 on your project, check memory in your CI, and plan a safe migration.
+
+Service 3
+
+## Type-checking budget in CI
+Budgets in your pipeline that catch a pull request before it slows the build down, based on the compiler's own counters, with a tolerance calibrated on your project.
+
+Service 4
+
+## Team training and workshops
+Advanced TypeScript and type performance, for Angular, React and Node.js teams.
+
+Proof
+
+## Measured work, in public
+Every item links to its source.
+3pull requests merged into Microsoft’s TypeScript repositories
+2published experiments in the TypeScript Performance Lab, with raw results and the machine they ran on
+30Author of 30 articles on the Certificates.dev blog
+Certificates.devLead Content Owner for the JavaScript and TypeScript certifications
+ExperienceSeven years building large-scale enterprise applications with TypeScript and Angular
+2talks, workshops and podcasts given, including Devpreneur, a podcast he co-hosted
+
+## How a project starts
+We start with a short call about your codebase and what slows it down. The method is the same one behind the public experiments: measure, isolate one cause, fix it without weakening types, and publish the numbers to your team. See the merged fixes on Work, the experiments in the Lab, and the talks I give on Invite me to speak.
+Book an intro call Or write to mferret.pro@gmail.com
+
+---
+
+# Invite me to speak
+
+URL: https://martinferret.github.io/speak/
+
+## Invite me to speak
+I speak about TypeScript performance, the TypeScript compiler and AI agents built in TypeScript. Talks, workshops, podcasts and meetups, in English or French, on site or online.
+Invite me to speak LinkedIn
+
+## Short bio
+I'm a TypeScript developer focused on type-checking performance and TypeScript 7. I measure what makes TypeScript slow, then fix it: I run a public TypeScript Performance Lab with reproducible experiments, and my fixes to TypeScript's DOM types have been merged into Microsoft's TypeScript-DOM-lib-generator. I'm Lead Content Owner for the JavaScript and TypeScript certifications at Certificates.dev, and I've spent seven years building large-scale enterprise applications with TypeScript, Angular and Spring Boot. I also host What's up TypeScript France, an online TypeScript meetup.
+Download high-resolution photoWebP, 512 × 512 px, original fileTalks
+
+## Talks you can book
+Each one can run as a talk, online or on site, in English or French. Every talk is built on the Lab's published experiments; past appearances are on Speaking.
+
+## The DOM Is Lying to Your Types
+Level
+Expert
+Format
+30 to 45 min
+Every TypeScript project trusts lib.dom.d.ts, but it isn't written by hand: a generator turns web specifications into types, and that translation is where bugs hide. Optional parameters that throw, iterables typed as arrays, return types lost on the way. I fix these bugs upstream in Microsoft's generator. In this talk, I show how WebIDL becomes TypeScript, why the spec and not MDN is the source of truth, how to prove a DOM type is wrong, and how a fix travels from a pull request to your editor.
+
+## Your Types Have a Performance Budget. You're Just Not Measuring It.
+Level
+Expert
+Format
+30 to 45 min, also as a half-day workshop
+A one-line type change can multiply type-checking cost by ten without breaking a test: real projects shipped 23 times more instantiations and CI jobs that crashed. We budget bundle size and page speed, so why not types? TypeScript 6's counters are deterministic: same code, same numbers on any machine. With TypeScript 7, I measured small variations on large test suites, and I'm investigating how much tolerance a CI budget needs. I show how to measure the cost of your types, find the generic that dominates it, and fail a pull request before your build slows down.
+
+## Your AI Agent Is Slowing Down Your Compiler
+Level
+Intermediate to expert
+Format
+30 to 45 min
+Typed AI agents are everywhere: tools described with schemas, structured outputs inferred into TypeScript types, SDKs built on deeply generic APIs. Great for safety, but they can quietly crush your type-checker. I'm measuring what schemas, tool definitions and AI SDK types cost the TypeScript compiler as an agent grows from 1 to 50 tools, and which ways of writing them stay fast. You'll see the numbers, why some patterns explode, and how to keep agents fully typed and fast to build.
+
+## Past talks
+Delivered, newest first.
+All speaking WorkshopDelivered
+
+## Pizzeria del Compilator: Building a Type-Safe Configurator with TypeScript
+Speaker, Frontend Nation 2026, TypeScript Day, October 20, 2026, online
+
+## Organizing an event?
+Tell me about your audience, the date and the format.
+Invite me to speak LinkedInOr write to mferret.pro@gmail.com. For a consulting project rather than a talk, see Work with me.
+
+---
+
+# TypeScript Performance Lab
+
+URL: https://martinferret.github.io/lab/
+
+## TypeScript Performance Lab
+Each experiment ships its code, the exact command that produced the numbers, and the raw results with the machine they ran on.
+See the experimentsHow it’s measured2 experimentsData generated Nov 11, 2026
+Lab #001Confirmed−57%check time with TypeScript 7 after the fix
+Lab #002Open question3.5×faster check of type-fest sources, TypeScript 7 vs 6
+Lab #001Confirmed
+
+## Typed events
+−57%check time with TypeScript 7 after the fix
+Yes. On an Apple M3 Pro (12 cores), inferring the event name from the generic parameter cut check time by 52% with TypeScript 6 and by 57% with TypeScript 7 (51% to 65% from the fastest and slowest runs); on a 1-core Intel Xeon, by 41% and 65%. The safety check passed on both machines, so the type safety is the same. Narrowing include to src also stopped TypeScript from reading a generated file the app never imports.
+Read the experiment −52%890 ms430 msTypeScript 6−57%330 ms143 msTypeScript 7Before the fixAfter the fixMedian check time, lower is fasterOpened October 2026. Latest run: Apple M3 Pro, 12 cores, 36 GB, Node.js 22.23.3, Nov 9, 2026. 2 machines in total.
+Lab #002Open question
+
+## TypeScript 6 vs 7 on type-fest
+3.5×faster check of type-fest sources, TypeScript 7 vs 6
+Being re-measured The verdict below stays as published until the new results are in.
+On an Apple M3 Pro (12 cores), TypeScript 7.0.2 checked the type-fest sources 3.5× faster than TypeScript 6.0.3 (0.484 s vs 1.67 s): 2.6× comes from the native compiler alone (single-threaded) and 1.3× from parallel checking. On the full suite with type tests, TypeScript 6 stops at Node.js's default heap limit (4.0 GiB); with a 16 GiB heap it finishes in 74.6 s, against 14.1 s for TypeScript 7 (5.3× faster), but TypeScript 7 peaks higher in memory (11.6 GiB RSS vs 10.4 GiB). Stays open until a second machine is measured with the same protocol.
+Read the experiment 4.1× faster6.68 s1.61 sIntel Xeon3.5× faster1.67 s484 msApple M3 ProTypeScript 6TypeScript 7Median check time, lower is fasterLatest run: Apple M3 Pro, 12 cores, 36 GB, Node.js 22.23.3, Nov 11, 2026. 2 machines in total.
+Method
+
+## Same protocol, every experiment
+Six rules that make a number worth publishing. The notebook's method page has the full protocol, and the lab repository has the scripts. To apply it to your own codebase, see Work with me.
+Rule 1
+
+## Pin everything
+Compiler versions, external commits and machine context are recorded with every result.
+
+Rule 2
+
+## Measure the same way
+Several runs of tsc with extended diagnostics per condition, after a discarded warm-up, conditions interleaved. Median reported with the range.
+
+Rule 3
+
+## Change one thing
+A fix changes a single thing and keeps the same type safety.
+
+Rule 4
+
+## Prove type safety
+A safety file lists usages that must still fail to compile. The run stops if one passes.
+
+Rule 5
+
+## Publish any verdict
+Confirmed, rejected or open. Negative results are published too.
+
+Rule 6
+
+## Know the limits
+Compare conditions on the same machine only. Counters may differ across compilers.
+
+---
+
+# Work
+
+URL: https://martinferret.github.io/work/
+
+## Open source work
+5 pull requests at Microsoft, 3 merged, 2 in review. 14 contributions across 6 projects, statuses read from GitHub on Nov 11, 2026.
+Browse the listTimeline14 contributionsby status and by project5252MergedIn reviewDiscussionClosed
+TypeScript DOM types7 contributions, show only this project
+type-fest2 contributions, show only this project
+Spring AMQP2 contributions, show only this project
+TypeScript1 contributions, show only this project
+TypeScript website1 contributions, show only this project
+Stack Overflow1 contributions, show only this project
+Filter by text, repository or numberKindAll kindsPull requestsIssue analysesAnswersStatusAny statusMergedIn reviewDiscussionAnsweredClosedProjectAll projectsTypeScript DOM typesTypeScriptTypeScript websitetype-festStack OverflowSpring AMQPShowing all 14
+Merged
+
+## Merged fixes 5
+Pull requests accepted by the maintainers.
+, so the type of the callbacks result was lost. it is now generic, and an async callback resolves to the awaited value. pull request microsoft/typescript-dom-lib-generator#2084">Scheduler.postTask keeps the type of your callback’s resultTypeScript DOM types #2583, pull requestNov 8, 2026MergedpostTask() returned Promise<any>, so the type of the callback’s result was lost. It is now generic, and an async callback resolves to the awaited value.
+Original title: Make Scheduler.postTask generic over the callback result
+Pull request on GitHubFixes microsoft/TypeScript-DOM-lib-generator#2084Merged Nov 8, 2026+112 / −48 lines
+createElementNS returns the exact element type for XHTMLTypeScript DOM types #2582, pull requestNov 6, 2026MergedcreateElementNS with the XHTML namespace returns the specific element type, like HTMLDivElement for "div", as SVG and MathML already do.
+Original title: Add a generic createElementNS overload for the XHTML namespace
+Pull request on GitHubFixes microsoft/TypeScript#63556Merged Nov 6, 2026+12 / −0 lines
+MutationObserver.observe() without options is now a compile errorTypeScript DOM types #2578, pull requestNov 3, 2026MergedCalling observe(target) without options always throws at runtime. The DOM types now flag it at compile time.
+Original title: Make options required in MutationObserver.observe()
+Pull request on GitHubPart of microsoft/TypeScript-DOM-lib-generator#2566Merged Nov 3, 2026+24 / −4 lines
+Per-listener batch size and timeout in Spring AMQPSpring AMQP #3549, pull requestAug 6, 2026MergedBatch size and receive timeout can be set per listener, with SpEL and property placeholders.
+Original title: Add batchSize and batchReceiveTimeout to @RabbitListener
+Pull request on GitHubFixes spring-projects/spring-amqp#1545Merged Aug 6, 2026+411 / −8 lines
+Docs: how channel pools are sized in Spring AMQPSpring AMQP #3528, pull requestJul 28, 2026MergedDocuments that channel pools are bounded and block when exhausted, and that the factory is not meant for consumers.
+Original title: Document PooledChannelConnectionFactory sizing
+Pull request on GitHubFixes spring-projects/spring-amqp#1557Merged Jul 28, 2026+14 / −0 lines
+In review
+
+## In review 2
+Pull requests waiting for a maintainer.
+Shared WebAssembly memories get the right buffer typeTypeScript DOM types #2592, pull requestNov 9, 2026In reviewA memory created with shared: true exposes a SharedArrayBuffer, but lib.dom said ArrayBuffer, so instanceof SharedArrayBuffer checks narrowed to never. Memory is now generic over its buffer type, and existing code keeps working.
+Original title: Type WebAssembly.Memory buffers as ArrayBufferLike for shared memories
+Pull request on GitHubFixes microsoft/TypeScript-DOM-lib-generator#2447Opened Nov 9, 2026+224 / −100 lines
+Docs: fixing the TS2882 error on CSS importsTypeScript website #3694, pull requestNov 6, 2026In reviewExplains the TS2882 error on CSS imports since TypeScript 6.0, with fixes for library authors and for users.
+Original title: Document noUncheckedSideEffectImports fixes for CSS packages
+Pull request on GitHubFixes microsoft/TypeScript-Website#3607Opened Nov 6, 2026+56 / −2 lines
+Discussion
+
+## Analyses and discussions 7
+Root-cause analyses, reproductions and answers on issues I did not open.
+Error subtypes and InstanceType: a compatibility risk, reproducedTypeScript #61460, issue analysisNov 6, 2026DiscussionOffered to implement the proposed ErrorConstructorStatics split and flagged a compatibility risk first: @types/node statics such as captureStackTrace would stop reaching TypeError, reproduced as TS2339.
+Original title: InstanceType and constructor return type inference for built-in Error subtypes
+Comment on GitHubCommented Nov 6, 2026
+What remains after making MutationObserver options requiredTypeScript DOM types #2566, issue analysisNov 5, 2026DiscussionReported that #2578 now makes observe(target) without options a compile-time error, and laid out what remains: options like {} still need a union type that would break existing code.
+Original title: MutationObserver.observe options should not be optional (follow-up)
+Comment on GitHubCommented Nov 5, 2026
+> and the send side as writablestream, matching how other byte streams are typed and what wpt covers. issue analysis">Byte stream types for WebTransportTypeScript DOM types #2439, issue analysisNov 3, 2026DiscussionProposed typing the receive side as ReadableStream<Uint8Array<ArrayBuffer>> and the send side as WritableStream<BufferSource>, matching how other byte streams are typed and what WPT covers.
+Original title: Missing bounds in WebTransportReceiveStream and WebTransportSendStream parent types
+Comment on GitHubCommented Nov 3, 2026
+A Nullish type that works with exactOptionalPropertyTypestype-fest #1285, issue analysisNov 3, 2026ClosedShowed that the proposed definition rejects an explicit undefined under exactOptionalPropertyTypes, which type-fest itself enables, and suggested adding undefined with a type test for both settings.
+Original title: Nullish / Nilable type
+Comment on GitHubCommented Nov 3, 2026
+DeepValuesOf is already expressible with Paths and Gettype-fest #1315, issue analysisNov 3, 2026ClosedShowed the request can already be expressed with Paths (leavesOnly) and Get, and listed the questions a dedicated type would need to answer: leaves only, arrays and tuples, recursion depth.
+Original title: DeepValuesOf
+Comment on GitHubCommented Nov 3, 2026
+microsoft/typescript-dom-lib-generator typescript dom types 2574 helped the reporter toward a fix: traced why static methods are excluded from the iterable overloads (the generator filters them since #1839) and compared two approaches for typescript 6+. issue analysis">Helping a first-time contributor fix AbortSignal.anyTypeScript DOM types #2574, issue analysisNov 1, 2026DiscussionHelped the reporter toward a fix: traced why static methods are excluded from the Iterable overloads (the generator filters them since #1839) and compared two approaches for TypeScript 6+.
+Original title: AbortSignal.any should accept an Iterable<AbortSignal>
+Comment on GitHubCommented Nov 1, 2026
+Why TypeScript picks the second overloadStack Overflow, answerNov 1, 2026AnsweredExplained that overload choice depends on the order of the checker passes, not the order of the overloads: resolveCall tries every overload with the subtype relation before falling back to assignability.
+Original title: Why is the 2nd overload picked up?
+Answer on Stack OverflowAnswered Nov 1, 2026
+Nothing matches these filters.
+
+---
+
+# What's up TypeScript France
+
+URL: https://martinferret.github.io/meetup/
+
+## What's up TypeScript France
+A free, online TypeScript meetup in French, open to everyone: two 20-minute talks, live questions and the TypeScript news of the moment. Hosted by Martin Ferret.
+Register Propose a talkNext edition
+
+## What's up TypeScript France #1
+January 7, 2027, 7 pm Paris time (CET, UTC+1). Online, in French, free.
+Two 20-minute talks, live questions and the TypeScript news of the moment. Free, streamed live on YouTube with a replay.
+Register Propose a talkCall for talks open until Dec 15, 2026. Code of conduct. Meetup page on GitHub.
+
+## Who runs it
+The meetup is run by Martin Ferret, a TypeScript expert focused on type-checking performance. See his talks and podcasts, the TypeScript Performance Lab, or invite him to speak at your own event.
+
+---
+
+# About
+
+URL: https://martinferret.github.io/about/
+
+## About Martin Ferret
+Martin Ferret is a French TypeScript expert focused on type-checking performance, a contributor to Microsoft's TypeScript DOM types, and Lead Content Owner for the JavaScript and TypeScript certifications at Certificates.dev.
+Work with me Invite me to speakMartin Ferret France, working remotely across EuropeHe works on how fast TypeScript checks types. He builds small experiments that isolate one cause of slowness, measures it on TypeScript 6 and 7, and publishes the result with the raw numbers in the TypeScript Performance Lab, including when the hypothesis turns out to be wrong.
+When the cause sits in TypeScript’s own type definitions, he fixes it there: his pull requests to the DOM type definitions are merged into Microsoft’s TypeScript-DOM-lib-generator, listed on Work. He has spent seven years building large-scale enterprise applications with TypeScript and Angular.
+He is the author of 30 articles on the Certificates.dev blog, listed on Writing. He co-hosted Devpreneur, a French-language podcast about entrepreneurship for developers, with Alain Chautard. He runs What's up TypeScript France, a free online meetup in French.
+Open sourceContributor to TypeScript’s DOM types
+ResearchTypeScript Performance Lab
+CommunityWhat's up TypeScript France
+CertificationsLead Content Owner, JavaScript and TypeScript, Certificates.dev. Author of 30 articles on its blog
+
+## Profiles
+GitHub
+LinkedIn
+X
+Medium
+Sessionize
+What's up TypeScript France
+Devpreneur on Spotify
+mferret.pro@gmail.com
+Method
+
+## How I work
+The same loop for every slowdown, from the first measurement to the published result.
+Step 1
+
+## Measure
+Run tsc with extended diagnostics on a real project and record check time, memory and instantiations.
+
+Step 2
+
+## Isolate
+Shrink the slowdown to one cause in a small experiment, with a safety file proving the types stay as strict.
+
+Step 3
+
+## Fix upstream
+When the cause lives in TypeScript’s own types, open a pull request there, not a workaround.
+
+Step 4
+
+## Publish
+Ship the raw numbers and the machine they ran on, whatever the verdict.
+
+TimelineEvery contribution, talk and experiment, by dateEach entry links to its source.Open the timeline Contact: mferret.pro@gmail.com. For a talk, a workshop or a podcast, see Invite me.
+
+---
+
+# Devpreneur
+
+URL: https://martinferret.github.io/podcasts/devpreneur/
+
+Speaking/ Podcast
+
+## Devpreneur
+A French-language podcast about entrepreneurship for developers, co-hosted by Martin Ferret and Alain Chautard.
+Listen on Spotify All talks and podcastsPodcast, in FrenchPast
+
+## About the show
+Martin Ferret is co-host of Devpreneur, with Alain Chautard. The show's own description, in French:
+Tu codes. Tu veux travailler pour toi. Par où tu commences ? Devpreneur, c'est le podcast des développeurs et pros de l'IT qui passent ou veulent passer en solo.
+
+## Episodes
+Taux horaire, journalier ou forfait : lequel vous rapporte vraiment plus ?
+Automatiser son business avec l'IA et l'intelligence collective d'un Mastermind
+Portfolio freelance : comment convaincre des clients sans CV classique
+Pourquoi être un bon développeur ne suffit pas pour réussir en freelance
+Positionnement freelance : les leviers pour arrêter de se battre sur le prix
+Qui sommes nous ? Comment monétisons nous nos services ?
+The full list, newest first, is on Spotify.
+
+## More from Martin
+Martin also speaks about TypeScript performance in English and French: see his talks and podcast appearances, invite him to speak, or work with him on a TypeScript performance project.
+
+---
+
+# Writing
+
+URL: https://martinferret.github.io/writing/
+
+## Writing
+Martin Ferret writes about JavaScript and TypeScript. He is the author of 30 articles on the Certificates.dev blog, listed here newest first with a link to each original.
+Read the articlesAbout Martin
+
+## Published on Certificates.dev
+30 articles, newest first. Each opens the original on certificates.dev.
+DOM Events & Modern Patterns Cheat SheetLearn modern DOM event handling, including propagation, delegation, listener cleanup, custom events, forms, state management, efficient mutations, and...Nov 10, 2026, Certificates.dev
+this in JavaScript: Binding Rules and Arrow FunctionsJavaScript’s this depends on the call site, with explicit binding and new taking precedence; arrow functions inherit this, making them useful for callbacks...Nov 10, 2026, Certificates.dev
+Iterator Helpers: Lazy Pipelines in JavaScriptES2025 added map, filter, take and drop to iterators. Learn how lazy pipelines skip intermediate arrays, handle infinite sequences, and where they do not help.Oct 6, 2026, Certificates.dev
+AbortController: Cancellation and Cleanup in JavaScriptAbortController does more than cancel a fetch. Learn how one signal cleans up event listeners, times out requests, and combines with AbortSignal.any().Sep 22, 2026, Certificates.dev
+Proxy and Reflect: Metaprogramming in JavaScriptLearn how JavaScript Proxy and Reflect intercept object operations: the 13 traps and why Reflect matters.Sep 8, 2026, Certificates.dev
+Intl.NumberFormat and Intl.RelativeTimeFormat: The TrapsIntl.NumberFormat and Intl.RelativeTimeFormat replace your formatting library. Defaults, traps, and the 58x performance mistake to avoid.Aug 25, 2026, Certificates.dev
+The flat() and flatMap() methodsLearn how JavaScript's flat() and flatMap() work: default depth, flat(Infinity), dropping holes, and using flatMap as a combined map and filter.Aug 11, 2026, Certificates.dev
+JavaScript Generators: Writing Iterators With yieldJavaScript generators explained: write lazy iterators with yield, handle infinite sequences, and skip the protocol boilerplate.Jul 21, 2026, Certificates.dev
+JavaScript Set Methods: Native Set Theory, FinallySeven new methods landed on JavaScript's Set: union, intersection, difference, and more. Baseline since 2024. A practical guide with real-world examples.Jul 7, 2026, Certificates.dev
+Promise.withResolvers(): The Deferred Pattern Built-InPromise.withResolvers() replaces the manual deferred pattern in JavaScript. One destructuring, no executor, no let. ES2024, supported in all modern runtimes.Jun 23, 2026, Certificates.dev
+`using` in JavaScript: Automatic Resource ManagementLearn how the new using keyword and Symbol.dispose replace try/finally for cleaner resource management in JavaScript. With ES2026 support details.Jun 9, 2026, Certificates.dev
+Closures Explained: How Functions Remember Their ScopeA function in JavaScript remembers the scope it was created in, even after that scope has finished executing.May 26, 2026, Certificates.dev
+JavaScript finally gets dates rightJavaScript's Date object is 30 years old, copied from Java, and never really fixed.May 12, 2026, Certificates.dev
+Nullish Coalescing OperatorUnderstand the difference between || and ?? in JavaScript, and learn how the nullish coalescing operator avoids common pitfalls with falsy values like 0...Apr 28, 2026, Certificates.dev
+JavaScript Mistakes That Quietly Destroy Production AppsSome JavaScript mistakes don’t crash your app, they slowly degrade performance, reliability, and user trust. Here are the ones that cost the most in production.Apr 14, 2026, Certificates.dev
+Custom Errors in JavaScript: Extending Error the Right WayLearn how to extend JavaScript’s Error class correctly, build error hierarchies, and wrap exceptions for clean, scalable error handling.Mar 17, 2026, Certificates.dev
+JavaScript Modules Explained: The Foundation of Modern JS ApplicationsA deep, practical explanation of JavaScript ES Modules: execution model, shared exports, strict mode, browser rules, and real-world implications.Mar 3, 2026, Certificates.dev
+Vanilla JavaScript in 2026: Why You Still Can’t Ignore ItEvery framework claims to “fix” JavaScript.Feb 3, 2026, Certificates.dev
+The JavaScript Event Loop: The Skill That Separates Juniors From SeniorsPromises, async/await, timers…everything in JavaScript relies on the event loop. Mastering it changes how you write and debug code.Jan 21, 2026, Certificates.dev
+JavaScript Isn’t Slow. You’re Just Using It Wrong.JavaScript is not inherently slow. Poor architectural choices are. Here’s how modern JavaScript actually performs, and where developers really lose speed.Jan 6, 2026, Certificates.dev
+Understanding try...catch in JavaScript: How to Handle Errors ProperlyLearn how JavaScript errors work and how to prevent your app from crashing using try...catch.Dec 21, 2025, Certificates.dev
+The 8 JavaScript Errors Every Developer Should UnderstandUnderstanding JavaScript errors is essential for debugging efficiently. Discover the 8 native error types with clear explanations and practical examples.Dec 5, 2025, Certificates.dev
+Inside the JavaScript Event Loop: How the Runtime Actually WorksUnderstand the JavaScript event loop in depth.Nov 18, 2025, Certificates.dev
+Document Fragments: The Secret to Fast, Clean DOM Manipulation in JavaScriptDiscover how DocumentFragment can dramatically speed up DOM manipulation in JavaScript.Nov 6, 2025, Certificates.dev
+Template Literals in JavaScript: Write Strings the Way They Were Meant to BeLearn how template literals make JavaScript string handling modern, readable, and expressive through multi-line syntax, interpolation, and tag functions.Oct 23, 2025, Certificates.dev
+Dynamic Imports in JavaScript: Load Smarter, Not SoonerLearn how to use dynamic imports in JavaScript to boost performance, reduce bundle size, and load code only when needed.Oct 15, 2025, Certificates.dev
+Unravel the mystery of JavaScript's event bubbling and take control of your event handlingEver clicked a button and had unexpected things happen to its parent elements?Oct 8, 2025, Certificates.dev
+Promises in JavaScript: Receipts for Future Values and Advanced PatternsJavaScript Promises manage future values with clean async handling.Sep 30, 2025, Certificates.dev
+Closures: private state, tiny surfaceJavaScript closures give functions memory: private state without globals, safer APIs, and predictable behavior. See what they are, when to use them, and why.Sep 8, 2025, Certificates.dev
+Event Delegation: One Listener to Rule Them AllLearn how event delegation in JavaScript lets you use a single event listener to handle clicks on multiple child elements efficiently, ideal for dynamic UIs...Jul 14, 2025, Certificates.dev
+These articles belong to Certificates.dev and are listed here with a link to each one. Related: work with me on TypeScript performance, or see the Lab.

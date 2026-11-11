@@ -1,48 +1,29 @@
 # Martin Ferret
 
-> TypeScript expert focused on type-checking performance. Contributor to TypeScript’s DOM types. Lead Content Owner for the JavaScript and TypeScript certifications at Certificates.dev. Based in France, working remotely across Europe.
+> Martin Ferret is a French TypeScript expert focused on type-checking performance, a contributor to Microsoft's TypeScript DOM types, and Lead Content Owner for the JavaScript and TypeScript certifications at Certificates.dev.
 
-Last updated: 2026-11-11. Every claim on this site links to a source.
-Contact: mferret.pro@gmail.com
+Contact: mferret.pro@gmail.com. Last updated 2026-11-11. Full text of the key pages: https://martinferret.github.io/llms-full.txt
 
-## Pages
-- [Work](https://martinferret.github.io/work/): pull requests, issue analyses and answers in projects Martin does not own
-- [Lab](https://martinferret.github.io/lab/): reproducible TypeScript type-checking performance experiments
-- [Speaking](https://martinferret.github.io/speaking/): talks, workshops, podcasts
-- [Invite me](https://martinferret.github.io/speak/): bio, talk abstracts, photo and contact for organizers
-- [Timeline](https://martinferret.github.io/timeline/): every contribution, talk and experiment by date; machine-readable at https://martinferret.github.io/timeline.json
-- [About](https://martinferret.github.io/about/)
+## Services
+- TypeScript performance audit: measure type-checking time and memory on the team's real codebase, find the types and files that cost the most, deliver a prioritized fix list.
+- TypeScript 7 migration: measure TypeScript 6 vs 7 on the team's project, check memory in CI, plan a safe migration.
+- Type-checking budget in CI: budgets based on the compiler's counters, with a tolerance calibrated on the project, so a pull request can't silently slow the build down.
+- Team training and workshops: advanced TypeScript and type performance, for Angular, React and Node.js teams.
 
-## Metrics (as of 2026-11-11)
-- 3 pull requests merged into Microsoft’s TypeScript repositories
-- 5 pull requests opened at Microsoft
-- 5 pull requests merged in projects I don’t own
-- 2 pull requests in review right now
-- 4 TypeScript projects contributed to
-- 2 Lab experiments published with raw results
-
-## Ledger
-- 2026-11-09, Pull request, open: [microsoft/TypeScript-DOM-lib-generator#2592: Type WebAssembly.Memory buffers as ArrayBufferLike for shared memories](https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/2592)
-- 2026-11-08, Pull request, merged: [microsoft/TypeScript-DOM-lib-generator#2583: Make Scheduler.postTask generic over the callback result](https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/2583)
-- 2026-11-06, Pull request, merged: [microsoft/TypeScript-DOM-lib-generator#2582: Add a generic createElementNS overload for the XHTML namespace](https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/2582)
-- 2026-11-06, Pull request, open: [microsoft/TypeScript-Website#3694: Document noUncheckedSideEffectImports fixes for CSS packages](https://github.com/microsoft/TypeScript-Website/pull/3694)
-- 2026-11-06, Issue analysis, discussion: [microsoft/TypeScript#61460: InstanceType and constructor return type inference for built-in Error subtypes](https://github.com/microsoft/TypeScript/issues/61460#issuecomment-6683539096)
-- 2026-11-05, Issue analysis, discussion: [microsoft/TypeScript-DOM-lib-generator#2566: MutationObserver.observe options should not be optional (follow-up)](https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/2566#issuecomment-6664861293)
-- 2026-11-03, Issue analysis, discussion: [microsoft/TypeScript-DOM-lib-generator#2439: Missing bounds in WebTransportReceiveStream and WebTransportSendStream parent types](https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/2439#issuecomment-6614518879)
-- 2026-11-03, Pull request, merged: [microsoft/TypeScript-DOM-lib-generator#2578: Make options required in MutationObserver.observe()](https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/2578)
-- 2026-11-03, Issue analysis, closed: [sindresorhus/type-fest#1285: Nullish / Nilable type](https://github.com/sindresorhus/type-fest/issues/1285#issuecomment-6617554050)
-- 2026-11-03, Issue analysis, closed: [sindresorhus/type-fest#1315: DeepValuesOf](https://github.com/sindresorhus/type-fest/issues/1315#issuecomment-6617486103)
-- 2026-11-03, Lab experiment, confirmed: [TypeScript Performance Lab #001: Typed events: the elegant type that slowed down every call site](https://github.com/MartinFerret/typescript-performance-lab/tree/main/experiments/001-typed-events)
-- 2026-11-03, Lab experiment, open-question: [TypeScript Performance Lab #002: TypeScript 6 vs 7 on type-fest](https://github.com/MartinFerret/typescript-performance-lab/tree/main/experiments/002-ts6-vs-ts7-type-fest)
-- 2026-11-01, Issue analysis, discussion: [microsoft/TypeScript-DOM-lib-generator#2574: AbortSignal.any should accept an Iterable<AbortSignal>](https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/2574#issuecomment-6561832671)
-- 2026-11-01, Answer, answered: [Stack Overflow: Why is the 2nd overload picked up?](https://stackoverflow.com/questions/80014081/why-is-the-2nd-overload-picked-up/80014150#80014150)
-- 2026-10-20, Workshop, delivered: Pizzeria del Compilator: Building a Type-Safe Configurator with TypeScript (Frontend Nation 2026, TypeScript Day)
-- 2026-08-06, Pull request, merged: [spring-projects/spring-amqp#3549: Add batchSize and batchReceiveTimeout to @RabbitListener](https://github.com/spring-projects/spring-amqp/pull/3549)
-- 2026-07-28, Pull request, merged: [spring-projects/spring-amqp#3528: Document PooledChannelConnectionFactory sizing](https://github.com/spring-projects/spring-amqp/pull/3528)
+## Key pages
+- [Work with me](https://martinferret.github.io/hire/): TypeScript performance consulting for engineering teams: audits, TypeScript 7 migration, CI budgets, training.
+- [Invite me to speak](https://martinferret.github.io/speak/): Bio, photo and talk abstracts for conference and podcast organizers.
+- [TypeScript Performance Lab](https://martinferret.github.io/lab/): Reproducible experiments on TypeScript type-checking performance, with raw results.
+- [Work](https://martinferret.github.io/work/): Pull requests and issue analyses in Microsoft's TypeScript repositories and other projects, with live GitHub status.
+- [What's up TypeScript France](https://martinferret.github.io/meetup/): The free online TypeScript meetup in French that Martin runs.
+- [About](https://martinferret.github.io/about/): Who Martin is, with links to every profile.
+- [Devpreneur](https://martinferret.github.io/podcasts/devpreneur/): A French-language podcast about entrepreneurship for developers, co-hosted by Martin Ferret and Alain Chautard.
+- [Writing](https://martinferret.github.io/writing/): Martin's articles on JavaScript and TypeScript, including those published on the Certificates.dev blog.
 
 ## Elsewhere
 - https://github.com/MartinFerret
 - https://linkedin.com/in/martin-ferret
+- https://x.com/FerretMartin1
 - https://medium.com/@ferretmartin91
 - https://sessionize.com/martin-ferret
 - https://github.com/MartinFerret/rendez-vous-typescript
