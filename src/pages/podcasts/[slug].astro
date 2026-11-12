@@ -13,6 +13,10 @@ export function getStaticPaths() {
   return podcasts.map((p) => ({ params: { slug: p.slug }, props: { p } }));
 }
 const { p } = Astro.props as { p: HostedPodcast };
+// First and latest episode dates, computed from the episode dates (ISO strings sort by date).
+const dated = p.episodes.map((e) => e.date).filter((d): d is string => !!d).sort();
+const firstEpisode = dated[0];
+const lastEpisode = dated[dated.length - 1];
 const series = {
   '@type': 'PodcastSeries',
   '@id': abs(`/podcasts/${p.slug}/#series`),
@@ -22,6 +26,7 @@ const series = {
   sameAs: [p.url],
   inLanguage: p.inLanguage,
   author: [personRef(), { '@type': 'Person', name: p.cohost.name, url: p.cohost.url }],
+  ...(firstEpisode ? { startDate: firstEpisode } : {}),
 };
 const episodes = p.episodes.map((e) => ({
   '@type': 'PodcastEpisode',
@@ -50,6 +55,7 @@ const description = `${p.summary} Episodes and Spotify link.`.length < 155 ? `${
       </div>
       <div class="kcard">
         <h2>Episodes</h2>
+        {firstEpisode && lastEpisode && <p class="meta">{p.episodes.length} episodes, from {formatDate(firstEpisode)} (first episode) to {formatDate(lastEpisode)} (latest episode).</p>}
         <ol class="eps" role="list">
           {p.episodes.map((e) => (
             <li><a class="ep" href={e.url} target="_blank" rel="noopener" lang="fr"><span class="ep-title">{e.title}</span>{e.date && <span class="meta">{formatDate(e.date)}</span>}</a></li>

@@ -3,7 +3,6 @@ import '@fontsource-variable/geist/index.css';
 import '@fontsource-variable/funnel-display/index.css';
 import '@fontsource-variable/jetbrains-mono/index.css';
 import '../styles/global.css';
-import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Search from '../components/Search.astro';
 import Footer from '../components/Footer.astro';
@@ -71,14 +70,13 @@ const handle = site.links.x.replace(/^https:\/\/x\.com\//, '@');
         d.classList.add('js');
       })();
     </script>
-    <ClientRouter fallback="none" />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
     <div class="shell">
       <Header />
       <div class="main">
-        <main id="main" transition:name="main" transition:animate="fade">
+        <main id="main">
           <slot />
         </main>
         <Footer />

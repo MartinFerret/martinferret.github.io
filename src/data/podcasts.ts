@@ -38,14 +38,15 @@ export const podcasts: HostedPodcast[] = [
     description:
       "Tu codes. Tu veux travailler pour toi. Par où tu commences ? Devpreneur, c'est le podcast des développeurs et pros de l'IT qui passent ou veulent passer en solo.",
     // The 6 episodes listed on the public show page on 2026-11-11, in its order (newest first; the last one is
-    // introduced as the first episode). Spotify shows a day and month but no year, so no date is recorded.
+    // introduced as the first episode). Day and month as shown on Spotify (read on 2026-11-12); the year, 2026,
+    // comes from Martin, since the page shows none.
     episodes: [
-      { title: 'Taux horaire, journalier ou forfait : lequel vous rapporte vraiment plus ?', url: 'https://open.spotify.com/episode/266vMilkJqVh0Nr6BSbrEi' },
-      { title: "Automatiser son business avec l'IA et l'intelligence collective d'un Mastermind", url: 'https://open.spotify.com/episode/6I92OtdbFypqQ04lOo4dMk' },
-      { title: 'Portfolio freelance : comment convaincre des clients sans CV classique', url: 'https://open.spotify.com/episode/0czy2SEUPVCWA4bBnawHab' },
-      { title: 'Pourquoi être un bon développeur ne suffit pas pour réussir en freelance', url: 'https://open.spotify.com/episode/3QccpIqpXp8s6ZsvMgHQaU' },
-      { title: 'Positionnement freelance : les leviers pour arrêter de se battre sur le prix', url: 'https://open.spotify.com/episode/5EGlswGXbHENNWXXjJhSdC' },
-      { title: 'Qui sommes nous ? Comment monétisons nous nos services ?', url: 'https://open.spotify.com/episode/7DIvC00XXzTUqTbPxfFV9j' },
+      { title: 'Taux horaire, journalier ou forfait : lequel vous rapporte vraiment plus ?', url: 'https://open.spotify.com/episode/266vMilkJqVh0Nr6BSbrEi', date: '2026-04-09' },
+      { title: "Automatiser son business avec l'IA et l'intelligence collective d'un Mastermind", url: 'https://open.spotify.com/episode/6I92OtdbFypqQ04lOo4dMk', date: '2026-03-19' },
+      { title: 'Portfolio freelance : comment convaincre des clients sans CV classique', url: 'https://open.spotify.com/episode/0czy2SEUPVCWA4bBnawHab', date: '2026-03-05' },
+      { title: 'Pourquoi être un bon développeur ne suffit pas pour réussir en freelance', url: 'https://open.spotify.com/episode/3QccpIqpXp8s6ZsvMgHQaU', date: '2026-02-19' },
+      { title: 'Positionnement freelance : les leviers pour arrêter de se battre sur le prix', url: 'https://open.spotify.com/episode/5EGlswGXbHENNWXXjJhSdC', date: '2026-02-05' },
+      { title: 'Qui sommes nous ? Comment monétisons nous nos services ?', url: 'https://open.spotify.com/episode/7DIvC00XXzTUqTbPxfFV9j', date: '2026-01-22' },
     ],
   },
 ];

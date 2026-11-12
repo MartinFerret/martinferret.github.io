@@ -182,6 +182,9 @@ function openFromHash() {
   if (!location.hash) return;
   const el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
   if (!el) return;
+  // A whole section (taller than the screen) keeps the browser's own jump to its top: centering it
+  // would scroll its heading out of view. Only a single item (a contribution, an event) is opened and centered.
+  if (el.getBoundingClientRect().height > innerHeight * 0.7) return;
   const det = el.matches('details') ? (el as HTMLDetailsElement) : el.querySelector('details');
   if (det) det.open = true;
   if (el.hasAttribute('data-out')) {
@@ -321,9 +324,7 @@ function initOnce() {
 }
 
 export function boot() {
+  // Plain page loads: every link is a normal navigation, so nothing can swallow a click.
   initOnce();
-  document.addEventListener('astro:page-load', () => {
-    setMenu(false); syncCurrent(); observe(); initFiltersFromUrl(); applyTimeline(); openFromHash();
-  });
-  document.addEventListener('astro:after-swap', () => document.documentElement.classList.add('js'));
+  setMenu(false); syncCurrent(); observe(); initFiltersFromUrl(); applyTimeline(); openFromHash();
 }

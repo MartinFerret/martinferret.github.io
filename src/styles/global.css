@@ -286,6 +286,9 @@ main:has(> .frame:last-child) + .footer { margin-top: var(--s5); }
 .js [data-draw] { transform: scaleY(0); transition: transform 0.9s var(--ease); }
 .js [data-draw='x'] { transform: scaleX(0); }
 .js [data-drawn] [data-draw], .js [data-draw][data-drawn] { transform: none; }
+/* Native cross-page fade (no client router): the browser animates between two normal page loads. */
+@view-transition { navigation: auto; }
+main { view-transition-name: main; }
 ::view-transition-old(main) { animation: 140ms ease-in both vt-out; }
 ::view-transition-new(main) { animation: 220ms var(--ease-out) both vt-in; }
 @keyframes vt-out { to { opacity: 0; } }
