@@ -1,6 +1,6 @@
 {
   "person": "Martin Ferret",
-  "generatedAt": "2026-11-11T20:26:34.194Z",
+  "generatedAt": "2026-11-12T18:51:24.079Z",
   "rows": [
     {
       "source": "contribution",
@@ -15,7 +15,7 @@
       "url": "https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/2592",
       "description": "A memory created with shared: true exposes a SharedArrayBuffer, but lib.dom said ArrayBuffer, so instanceof SharedArrayBuffer checks narrowed to never. Memory is now generic over its buffer type, and existing code keeps working.",
       "ecosystem": "TypeScript",
-      "statusCheckedAt": "2026-11-11T20:26:34.856Z"
+      "statusCheckedAt": "2026-11-12T18:51:24.694Z"
     },
     {
       "source": "contribution",
@@ -30,7 +30,7 @@
       "url": "https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/2583",
       "description": "postTask() returned Promise<any>, so the type of the callback’s result was lost. It is now generic, and an async callback resolves to the awaited value.",
       "ecosystem": "TypeScript",
-      "statusCheckedAt": "2026-11-11T20:26:34.696Z"
+      "statusCheckedAt": "2026-11-12T18:51:24.576Z"
     },
     {
       "source": "contribution",
@@ -45,7 +45,7 @@
       "url": "https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/2582",
       "description": "createElementNS with the XHTML namespace returns the specific element type, like HTMLDivElement for \"div\", as SVG and MathML already do.",
       "ecosystem": "TypeScript",
-      "statusCheckedAt": "2026-11-11T20:26:34.688Z"
+      "statusCheckedAt": "2026-11-12T18:51:24.564Z"
     },
     {
       "source": "contribution",
@@ -60,7 +60,7 @@
       "url": "https://github.com/microsoft/TypeScript-Website/pull/3694",
       "description": "Explains the TS2882 error on CSS imports since TypeScript 6.0, with fixes for library authors and for users.",
       "ecosystem": "TypeScript",
-      "statusCheckedAt": "2026-11-11T20:26:35.920Z"
+      "statusCheckedAt": "2026-11-12T18:51:24.642Z"
     },
     {
       "source": "contribution",
@@ -75,7 +75,7 @@
       "url": "https://github.com/microsoft/TypeScript/issues/61460#issuecomment-6683539096",
       "description": "Offered to implement the proposed ErrorConstructorStatics split and flagged a compatibility risk first: @types/node statics such as captureStackTrace would stop reaching TypeError, reproduced as TS2339.",
       "ecosystem": "TypeScript",
-      "statusCheckedAt": "2026-11-11T20:26:34.771Z"
+      "statusCheckedAt": "2026-11-12T18:51:24.485Z"
     },
     {
       "source": "contribution",
@@ -90,7 +90,7 @@
       "url": "https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/2566#issuecomment-6664861293",
       "description": "Reported that #2578 now makes observe(target) without options a compile-time error, and laid out what remains: options like {} still need a union type that would break existing code.",
       "ecosystem": "TypeScript",
-      "statusCheckedAt": "2026-11-11T20:26:34.662Z"
+      "statusCheckedAt": "2026-11-12T18:51:24.484Z"
     },
     {
       "source": "contribution",
@@ -105,7 +105,7 @@
       "url": "https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/2439#issuecomment-6614518879",
       "description": "Proposed typing the receive side as ReadableStream<Uint8Array<ArrayBuffer>> and the send side as WritableStream<BufferSource>, matching how other byte streams are typed and what WPT covers.",
       "ecosystem": "TypeScript",
-      "statusCheckedAt": "2026-11-11T20:26:34.693Z"
+      "statusCheckedAt": "2026-11-12T18:51:24.500Z"
     },
     {
       "source": "contribution",
@@ -120,7 +120,7 @@
       "url": "https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/2578",
       "description": "Calling observe(target) without options always throws at runtime. The DOM types now flag it at compile time.",
       "ecosystem": "TypeScript",
-      "statusCheckedAt": "2026-11-11T20:26:34.690Z"
+      "statusCheckedAt": "2026-11-12T18:51:24.551Z"
     },
     {
       "source": "contribution",
@@ -135,7 +135,7 @@
       "url": "https://github.com/sindresorhus/type-fest/issues/1285#issuecomment-6617554050",
       "description": "Showed that the proposed definition rejects an explicit undefined under exactOptionalPropertyTypes, which type-fest itself enables, and suggested adding undefined with a type test for both settings.",
       "ecosystem": "TypeScript",
-      "statusCheckedAt": "2026-11-11T20:26:34.642Z"
+      "statusCheckedAt": "2026-11-12T18:51:24.484Z"
     },
     {
       "source": "contribution",
@@ -150,7 +150,7 @@
       "url": "https://github.com/sindresorhus/type-fest/issues/1315#issuecomment-6617486103",
       "description": "Showed the request can already be expressed with Paths (leavesOnly) and Get, and listed the questions a dedicated type would need to answer: leaves only, arrays and tuples, recursion depth.",
       "ecosystem": "TypeScript",
-      "statusCheckedAt": "2026-11-11T20:26:34.698Z"
+      "statusCheckedAt": "2026-11-12T18:51:25.489Z"
     },
     {
       "source": "lab",
@@ -195,7 +195,7 @@
       "url": "https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/2574#issuecomment-6561832671",
       "description": "Helped the reporter toward a fix: traced why static methods are excluded from the Iterable overloads (the generator filters them since #1839) and compared two approaches for TypeScript 6+.",
       "ecosystem": "TypeScript",
-      "statusCheckedAt": "2026-11-11T20:26:34.642Z"
+      "statusCheckedAt": "2026-11-12T18:51:24.483Z"
     },
     {
       "source": "contribution",
@@ -240,7 +240,7 @@
       "url": "https://github.com/spring-projects/spring-amqp/pull/3549",
       "description": "Batch size and receive timeout can be set per listener, with SpEL and property placeholders.",
       "ecosystem": "Java",
-      "statusCheckedAt": "2026-11-11T20:26:34.706Z"
+      "statusCheckedAt": "2026-11-12T18:51:24.574Z"
     },
     {
       "source": "contribution",
@@ -255,7 +255,7 @@
       "url": "https://github.com/spring-projects/spring-amqp/pull/3528",
       "description": "Documents that channel pools are bounded and block when exhausted, and that the factory is not meant for consumers.",
       "ecosystem": "Java",
-      "statusCheckedAt": "2026-11-11T20:26:34.776Z"
+      "statusCheckedAt": "2026-11-12T18:51:24.566Z"
     }
   ],
   "metrics": [
@@ -263,42 +263,42 @@
       "key": "ms-merged",
       "value": 3,
       "label": "pull requests merged into Microsoft’s TypeScript repositories",
-      "asOf": "2026-11-11",
+      "asOf": "2026-11-12",
       "href": "/work/"
     },
     {
       "key": "ms-prs",
       "value": 5,
       "label": "pull requests opened at Microsoft",
-      "asOf": "2026-11-11",
+      "asOf": "2026-11-12",
       "href": "/work/"
     },
     {
       "key": "merged",
       "value": 5,
       "label": "pull requests merged in projects I don’t own",
-      "asOf": "2026-11-11",
+      "asOf": "2026-11-12",
       "href": "/work/"
     },
     {
       "key": "in-review",
       "value": 2,
       "label": "pull requests in review right now",
-      "asOf": "2026-11-11",
+      "asOf": "2026-11-12",
       "href": "/work/"
     },
     {
       "key": "ts-projects",
       "value": 4,
       "label": "TypeScript projects contributed to",
-      "asOf": "2026-11-11",
+      "asOf": "2026-11-12",
       "href": "/work/"
     },
     {
       "key": "lab",
       "value": 2,
       "label": "Lab experiments published with raw results",
-      "asOf": "2026-11-11",
+      "asOf": "2026-11-12",
       "href": "/lab/"
     }
   ]

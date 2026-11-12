@@ -2,7 +2,7 @@
 
 > Martin Ferret is a French TypeScript expert focused on type-checking performance, a contributor to Microsoft's TypeScript DOM types, and Lead Content Owner for the JavaScript and TypeScript certifications at Certificates.dev.
 
-Contact: mferret.pro@gmail.com. Last updated 2026-11-11. Full text of the key pages: https://martinferret.github.io/llms-full.txt
+Contact: mferret.pro@gmail.com. Last updated 2026-11-12. Full text of the key pages: https://martinferret.github.io/llms-full.txt
 
 ## Services
 - TypeScript performance audit: measure type-checking time and memory on the team's real codebase, find the types and files that cost the most, deliver a prioritized fix list.
@@ -171,7 +171,7 @@ Compare conditions on the same machine only. Counters may differ across compiler
 URL: https://martinferret.github.io/work/
 
 ## Open source work
-5 pull requests at Microsoft, 3 merged, 2 in review. 14 contributions across 6 projects, statuses read from GitHub on Nov 11, 2026.
+5 pull requests at Microsoft, 3 merged, 2 in review. 14 contributions across 6 projects, statuses read from GitHub on Nov 12, 2026.
 Browse the listTimeline14 contributionsby status and by project5252MergedIn reviewDiscussionClosed
 TypeScript DOM types7 contributions, show only this project
 type-fest2 contributions, show only this project
@@ -322,12 +322,13 @@ Martin Ferret is co-host of Devpreneur, with Alain Chautard. The show's own desc
 Tu codes. Tu veux travailler pour toi. Par où tu commences ? Devpreneur, c'est le podcast des développeurs et pros de l'IT qui passent ou veulent passer en solo.
 
 ## Episodes
-Taux horaire, journalier ou forfait : lequel vous rapporte vraiment plus ?
-Automatiser son business avec l'IA et l'intelligence collective d'un Mastermind
-Portfolio freelance : comment convaincre des clients sans CV classique
-Pourquoi être un bon développeur ne suffit pas pour réussir en freelance
-Positionnement freelance : les leviers pour arrêter de se battre sur le prix
-Qui sommes nous ? Comment monétisons nous nos services ?
+6 episodes, from Jan 22, 2026 (first episode) to Apr 9, 2026 (latest episode).
+Taux horaire, journalier ou forfait : lequel vous rapporte vraiment plus ?Apr 9, 2026
+Automatiser son business avec l'IA et l'intelligence collective d'un MastermindMar 19, 2026
+Portfolio freelance : comment convaincre des clients sans CV classiqueMar 5, 2026
+Pourquoi être un bon développeur ne suffit pas pour réussir en freelanceFeb 19, 2026
+Positionnement freelance : les leviers pour arrêter de se battre sur le prixFeb 5, 2026
+Qui sommes nous ? Comment monétisons nous nos services ?Jan 22, 2026
 The full list, newest first, is on Spotify.
 
 ## More from Martin

@@ -2,7 +2,7 @@
 
 > Martin Ferret is a French TypeScript expert focused on type-checking performance, a contributor to Microsoft's TypeScript DOM types, and Lead Content Owner for the JavaScript and TypeScript certifications at Certificates.dev.
 
-Contact: mferret.pro@gmail.com. Last updated 2026-11-11. Full text of the key pages: https://martinferret.github.io/llms-full.txt
+Contact: mferret.pro@gmail.com. Last updated 2026-11-12. Full text of the key pages: https://martinferret.github.io/llms-full.txt
 
 ## Services
 - TypeScript performance audit: measure type-checking time and memory on the team's real codebase, find the types and files that cost the most, deliver a prioritized fix list.
